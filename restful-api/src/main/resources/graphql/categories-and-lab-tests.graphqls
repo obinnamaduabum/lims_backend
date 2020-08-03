@@ -1,0 +1,70 @@
+type Query {
+    labTestCategories: [LabTestCategoryPojo]
+    pagination(first: Int = 8): PaginationResponseLabTestAndCategories
+    adminSettings: AdminSettings
+}
+
+type LabTestCategoryPojo {
+    name: String!
+    labTestPojos: [LabTestPojo]
+}
+
+
+type PaginationResponseLabTestAndCategories {
+    length: Int
+    pageSize: Int
+    pageNumber: Int
+    dataList: [LabTestPojo]
+}
+
+
+type LabTestCategoryPojo {
+    name: String
+    labTestPojos: [LabTestPojo]
+}
+
+
+type AdminSettings {
+
+    id: Int
+
+    dropBoxActive: Boolean
+
+    dataStorageProduction: Boolean
+
+    currencyType: CurrencyTypeConstant
+
+    accountVerificationSmsCount: Int
+
+    afterHoursPermitSendingOfSms: Int
+
+    afterHoursPermitUserLoginAfterFailedAttempts: Int
+
+    multiTexterNumberOfUnits: Int
+
+    multiTexterUnitsPerText: Int
+
+    numberOfLoginAttemptsAllowedForAUser: Int
+}
+
+type LabTestPojo {
+
+    id: Int
+
+    categoryName: String
+
+    currencyType: CurrencyTypeConstant
+
+    name: String
+
+    price: String
+
+    code: String
+}
+
+enum CurrencyTypeConstant {
+
+    NGN
+    USD
+    EUR
+}

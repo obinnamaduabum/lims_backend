@@ -1,0 +1,62 @@
+[
+  {
+      "paymentMethodName": "FLUTTER_WAVE",
+      "testing": {
+        "publicKey": "FLWPUBK-fb7e38e93cbbb14e20fba209b947652c-X",
+        "secret": "FLWSECK-c3b6d4587f1f71c82a1d7e318a44c21e-X",
+        "verifyUrl": "https://ravesandboxapi.flutterwave.com/flwv3-pug/getpaidx/api/v2/verify"
+      },
+      "live": {
+        "publicKey": "FLWPUBK-fb7e38e93cbbb14e20fba209b947652c-X",
+        "liveSecret": "FLWSECK-c3b6d4587f1f71c82a1d7e318a44c21e-X",
+        "verifyUrl": "https://api.ravepay.c/flwv3-pug/getpaidx/api/v2/verify"
+      },
+      "isLive": false,
+      "enabled": false
+  },
+  {
+    "paymentMethodName": "PAYSTACK",
+    "testing": {
+      "publicKey": "sk_test_60d31e1a8c9f23134d150f68bc80a4a015d9c514",
+      "secret": "pk_test_cf4939d7757abd588d5843a17f3cfc89d68825d0",
+      "verifyUrl": "https://ravesandboxapi.flutterwave.com/flwv3-pug/getpaidx/api/v2/verify"
+    },
+    "live": {
+      "publicKey": "FLWPUBK-fb7e38e93cbbb14e20fba209b947652c-X",
+      "liveSecret": "FLWSECK-c3b6d4587f1f71c82a1d7e318a44c21e-X",
+      "verifyUrl": "https://api.ravepay.c/flwv3-pug/getpaidx/api/v2/verify"
+    },
+    "isLive": false,
+    "enabled": false
+  },
+  {
+      "paymentMethodName": "PAY_PAL",
+      "testing": {
+        "publicKey": "FLWPUBK-fb7e38e93cbbb14e20fba209b947652c-X",
+        "secret": "",
+        "verifyUrl": ""
+      },
+      "live": {
+        "publicKey": "FLWPUBK-fb7e38e93cbbb14e20fba209b947652c-X",
+        "liveSecret": "",
+        "verifyUrl": ""
+      },
+    "isLive": false,
+    "enabled": false
+  },
+  {
+    "paymentMethodName": "CASH",
+    "testing": {
+      "publicKey": "",
+      "secret": "",
+      "verifyUrl": ""
+    },
+    "live": {
+      "publicKey": "",
+      "liveSecret": "",
+      "verifyUrl": ""
+    },
+    "isLive": false,
+    "enabled": false
+  }
+]

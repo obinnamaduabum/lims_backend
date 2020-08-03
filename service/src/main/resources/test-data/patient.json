@@ -1,0 +1,16 @@
+{
+  "email": "obinnatester@fmail.com",
+  "firstName": "test1",
+  "gender": "MALE",
+  "lastName": "test1",
+  "nextOFKinFirstName": "cool",
+  "nextOFKinLastName": "test",
+  "nextOFKinPhoneNumber": "23408067123344",
+  "nextOFKinPhoneNumberObj": {"id": "161", "name": "Nigeria", "alpha2": "NG", "alpha3": "NGA", "internationalPhoneNumber": "234"},
+  "otherName": "test",
+  "otherPhoneNumberObj": {"id": "161", "name": "Nigeria", "alpha2": "NG", "alpha3": "NGA", "internationalPhoneNumber": "234"},
+  "password": "flash",
+  "phoneNumber": "23408056718996",
+  "phoneNumberObj": {"id": "161", "name": "Nigeria", "alpha2": "NG", "alpha3": "NGA", "internationalPhoneNumber": "234"},
+  "twoFactor": ""
+}

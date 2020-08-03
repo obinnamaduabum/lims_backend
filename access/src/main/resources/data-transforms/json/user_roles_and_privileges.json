@@ -1,0 +1,83 @@
+[
+
+  {
+    "name": "User",
+    "roleType": "USER",
+    "privileges": [
+      { "name": "CAN_READ" },
+      { "name": "CAN_CREATE"},
+      { "name": "CAN_UPDATE"},
+      { "name": "CAN_DELETE"}
+    ]
+  },
+  {
+    "name": "Receptionist",
+    "roleType": "RECEPTIONIST",
+    "privileges": [
+      { "name": "CAN_READ" },
+      { "name": "CAN_CREATE"},
+      { "name": "CAN_UPDATE"},
+      { "name": "CAN_DELETE"}
+    ]
+  },
+  {
+    "name": "Medical lab scientist",
+    "roleType": "MEDICAL_LAB_SCIENTIST",
+    "privileges": [
+      { "name": "CAN_READ" },
+      { "name": "CAN_CREATE"},
+      { "name": "CAN_UPDATE"},
+      { "name": "CAN_DELETE"}
+    ]
+  },
+  {
+    "name": "Patient",
+    "roleType": "PATIENT",
+    "privileges": [
+      { "name": "CAN_READ" },
+      { "name": "CAN_CREATE"},
+      { "name": "CAN_UPDATE"},
+      { "name": "CAN_DELETE"}
+    ]
+  },
+  {
+    "name": "Admin",
+    "roleType": "ADMIN",
+    "privileges": [
+      { "name": "CAN_READ" },
+      { "name": "CAN_CREATE"},
+      { "name": "CAN_UPDATE"},
+      { "name": "CAN_DELETE"}
+    ]
+  },
+  {
+    "name": "Super admin",
+    "roleType": "SUPER_ADMIN",
+    "privileges": [
+      { "name": "CAN_READ" },
+      { "name": "CAN_CREATE"},
+      { "name": "CAN_UPDATE"},
+      { "name": "CAN_DELETE"}
+    ]
+  },
+  {
+    "name": "Pathologist",
+    "roleType": "PATHOLOGIST",
+    "privileges": [
+      { "name": "CAN_READ" },
+      { "name": "CAN_CREATE"},
+      { "name": "CAN_UPDATE"},
+      { "name": "CAN_DELETE"}
+    ]
+  },
+  {
+    "name": "Doctor",
+    "roleType": "DOCTOR",
+    "privileges": [
+      { "name": "CAN_READ" },
+      { "name": "CAN_CREATE"},
+      { "name": "CAN_UPDATE"},
+      { "name": "CAN_DELETE"}
+    ]
+  }
+]

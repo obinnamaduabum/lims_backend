@@ -1,0 +1,14 @@
+[
+  {
+    "name": "CAN_READ"
+  },
+  {
+    "name": "CAN_CREATE"
+  },
+  {
+    "name": "CAN_UPDATE"
+  },
+  {
+    "name": "CAN_DELETE"
+  }
+]

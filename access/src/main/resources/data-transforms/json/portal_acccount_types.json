@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Institution",
+    "type": "INSTITUTION"
+  },
+  {
+    "name": "Lab",
+    "type": "LAB"
+  },
+  {
+    "name": "Patient",
+    "type": "PATIENT"
+  },
+  {
+    "name": "Doctor",
+    "type": "DOCTOR"
+  }
+]

@@ -1,0 +1,24 @@
+{
+  "portalAccount": {
+    "name": "Lab",
+    "portalAccountTypes": "LAB"
+  },
+  "portalUser": {
+    "email": "robinhojohn07@gmail.com",
+    "password": ":)Stickywordswill)901358",
+    "firstName": "John",
+    "lastName": "Doe",
+    "otherName": "",
+    "username": "KobiAdmin",
+    "signUpType": "WEB",
+    "roles": [
+      "SUPER_ADMIN"
+    ],
+    "isEmailVerified": true,
+    "isEmailOrPhoneNumberIsVerified": true,
+    "portalAccountCode": "",
+    "phoneNumber": "2348131038509",
+    "otherPhoneNumber": "2348067189966",
+    "userStatus": "ACTIVE"
+  }
+}
