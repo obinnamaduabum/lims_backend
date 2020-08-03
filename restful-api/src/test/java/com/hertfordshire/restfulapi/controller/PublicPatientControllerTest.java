@@ -70,11 +70,14 @@ import static org.junit.Assert.assertEquals;
 //@WebAppConfiguration
 //@RunWith(SpringRunner.class)
 //@SpringBootTest
+
+//@WebAppConfiguration
+@ContextConfiguration(classes = {PublicPatientController.class})
+@SpringBootTest
 @ActiveProfiles("test")
 // @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 //@WebMvcTest(value = PublicPatientController.class)
 //@EntityScan(basePackages = {"com.hertfordshire.model.psql"})
-//@ContextConfiguration(classes = {PublicPatientController.class})
 @ComponentScan(basePackages = {
         "com.hertfordshire.access",
         "com.hertfordshire.service.firebase",
@@ -94,7 +97,7 @@ import static org.junit.Assert.assertEquals;
 @EntityScan(basePackages = {"com.hertfordshire.model.psql"})
 @EnableJpaRepositories(basePackages = {"com.hertfordshire.dao.psql"})
 //@EnableMongoRepositories(basePackages = "com.hertfordshire.dao.mongodb")
-@DataJpaTest
+//@DataJpaTest
 @AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 public class PublicPatientControllerTest extends AbstractJUnit4SpringContextTests {
 

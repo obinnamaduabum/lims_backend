@@ -10,7 +10,6 @@ import com.hertfordshire.model.psql.PortalAccountAndPortalUserRoleMappper;
 import com.hertfordshire.model.psql.PortalUser;
 import com.hertfordshire.model.psql.Role;
 import com.hertfordshire.dao.psql.PortalAccountAndPortalUserRoleMapperDao;
-import com.hertfordshire.dao.psql.PortalUserDao;
 import com.hertfordshire.dao.psql.RolesDao;
 import com.hertfordshire.service.psql.portal_account_role_mapper.PortalAccountAndPortalUserRoleMapperService;
 import com.hertfordshire.service.psql.portalaccount.PortalAccountService;

@@ -1,7 +1,5 @@
 package com.hertfordshire.restfulapi.controller.admin_settings;
 
-import com.google.gson.Gson;
-import com.hertfordshire.access.config.service.user_service.UserService;
 import com.hertfordshire.access.errors.ApiError;
 import com.hertfordshire.model.psql.AdminSettings;
 import com.hertfordshire.pojo.AdminSettingsPojo;
@@ -36,9 +34,6 @@ public class ProtectedAdminSettingsController extends ProtectedBaseApiController
     public ProtectedAdminSettingsController(AdminSettingsService adminSettingsService) {
         this.adminSettingsService = adminSettingsService;
     }
-
-
-
 
     @GetMapping("/auth/setting/admin")
     public ResponseEntity<?> getAllAdminSettings() {
