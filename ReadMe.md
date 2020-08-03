@@ -1,3 +1,7 @@
+Postgres,redis,mongodb and kafka are required to be running for this project to start
+
+
+
 //Redis
 brew services start redis
 
