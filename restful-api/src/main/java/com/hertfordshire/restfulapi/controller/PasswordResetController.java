@@ -44,16 +44,20 @@ import java.util.Optional;
 public class PasswordResetController extends PublicBaseApiController {
 
 
+    @Autowired
     private PortalUserService portalUserService;
 
+    @Autowired
     private PortalUserDao portalUserDao;
 
+    @Autowired
     private PasswordResetService passwordResetService;
 
     @Autowired
     private UserService userService;
 
 
+    @Autowired
     private EmailService emailService;
 
     @Value("${no.reply.email}")
@@ -78,17 +82,7 @@ public class PasswordResetController extends PublicBaseApiController {
 
 
     @Autowired
-    public PasswordResetController(PortalUserDao portalUserDao,
-                                   RolesDao rolesDao,
-                                   PortalAccountAndPortalUserRoleMapperDao portalAccountAndPortalUserRoleMapperDao,
-                                   PasswordResetTokenDao passwordResetTokenDao) {
-
-            passwordEncoder = new BCryptPasswordEncoder(12);
-            this.portalUserService = new PortalUserServiceImp(portalUserDao, passwordEncoder, rolesDao, portalAccountAndPortalUserRoleMapperDao);
-            this.messageUtil = new MessageUtil(messageSource);
-            this.portalUserDao = portalUserDao;
-            this.passwordResetService = new PasswordRestTokenServiceImpl(passwordResetTokenDao);
-            this.emailService = new EmailService();
+    public PasswordResetController() {
     }
 
 

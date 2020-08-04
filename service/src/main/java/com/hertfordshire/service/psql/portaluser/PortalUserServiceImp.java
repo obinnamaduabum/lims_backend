@@ -44,10 +44,13 @@ public class PortalUserServiceImp implements PortalUserService {
 
     private static final Logger logger = Logger.getLogger(PortalUserServiceImp.class.getSimpleName());
 
+    @Autowired
     private PortalUserDao portalUserDao;
 
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
     private RolesDao rolesDao;
 
     @PersistenceContext
@@ -59,17 +62,7 @@ public class PortalUserServiceImp implements PortalUserService {
 
 
     @Autowired
-    public PortalUserServiceImp(PortalUserDao portalUserDao,
-                                BCryptPasswordEncoder bCryptPasswordEncoder,
-                                RolesDao rolesDao,
-                                PortalAccountAndPortalUserRoleMapperDao portalAccountAndPortalUserRoleMapperDao) {
-
-        this.portalUserDao = portalUserDao;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.rolesDao = rolesDao;
-        this.portalAccountAndPortalUserRoleMapperDao = portalAccountAndPortalUserRoleMapperDao;
-
-    }
+    public PortalUserServiceImp(){}
 
 
     @Override

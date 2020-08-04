@@ -1,20 +1,11 @@
 package com.hertfordshire.restfulapi.controller.patient;
 
-import com.google.gson.Gson;
 import com.hertfordshire.access.errors.ApiError;
 import com.hertfordshire.access.errors.CustomBadRequestException;
-import com.hertfordshire.dao.psql.PortalAccountAndPortalUserRoleMapperDao;
-import com.hertfordshire.dao.psql.PortalUserDao;
-import com.hertfordshire.dao.psql.RolesDao;
 import com.hertfordshire.dto.PatientDto;
-import com.hertfordshire.mailsender.service.EmailService;
 import com.hertfordshire.model.psql.PortalUser;
-import com.hertfordshire.service.psql.email_verification.EmailVerificationService;
 import com.hertfordshire.service.psql.patient.PatientService;
-import com.hertfordshire.service.psql.portalaccount.PortalAccountService;
 import com.hertfordshire.service.psql.portaluser.PortalUserService;
-import com.hertfordshire.service.psql.portaluser.PortalUserServiceImp;
-import com.hertfordshire.service.psql.role.RolesService;
 import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.PhoneNumberValidationUtil;
 import com.hertfordshire.utils.controllers.PublicBaseApiController;
@@ -29,12 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,13 +39,7 @@ public class PublicPatientController extends PublicBaseApiController {
     private static final Logger logger = LoggerFactory.getLogger(PublicPatientController.class.getSimpleName());
 
     @Autowired
-    private PatientService patientService;
-
-//    @Autowired
     private PortalUserService portalUserService;
-
-////    @Autowired
-//    private RolesService rolesService;
 
     @Value("${default.domainUrlOne}")
     private String domainUrlOne;
@@ -68,41 +50,14 @@ public class PublicPatientController extends PublicBaseApiController {
     @Value("${no.reply.email}")
     private String noReplyEmail;
 
-//    @Autowired
-//    private EmailService emailService;
-//
-//    @Autowired
-//    private EmailVerificationService emailVerificationService;
-
     @Value("${emailValidForInMinutes}")
     private int emailValidForInMinutes;
 
-//    @Autowired
-//    private Gson gson;
+    @Autowired
+    private PatientService patientService;
 
-//    @Autowired
+    @Autowired
     private MessageUtil messageUtil;
-
-    @Autowired
-    private MessageSource messageSource;
-
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @Autowired
-    public PublicPatientController(PortalUserDao portalUserDao,
-                                   RolesDao rolesDao,
-                                   PortalAccountAndPortalUserRoleMapperDao portalAccountAndPortalUserRoleMapperDao) {
-
-//        this.portalUserDao = portalUserDao;
-//        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.portalUserService = new PortalUserServiceImp(portalUserDao, bCryptPasswordEncoder, rolesDao, portalAccountAndPortalUserRoleMapperDao);
-
-
-        this.messageUtil = new MessageUtil(messageSource);
-
-    }
-
 
     @ApiOperation("Create patient")
     @PostMapping("/default/patient/create")
