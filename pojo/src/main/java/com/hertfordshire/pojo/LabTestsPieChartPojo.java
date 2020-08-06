@@ -7,10 +7,6 @@ public class LabTestsPieChartPojo {
 
     private Long patientsNumberOfTests;
 
-    private String institutionTestsAmount;
-
-    private Long institutionNumberOfTests;
-
 
     public String getPatientsTestsAmount() {
         return patientsTestsAmount;
@@ -26,21 +22,5 @@ public class LabTestsPieChartPojo {
 
     public void setPatientsNumberOfTests(Long patientsNumberOfTests) {
         this.patientsNumberOfTests = patientsNumberOfTests;
-    }
-
-    public String getInstitutionTestsAmount() {
-        return institutionTestsAmount;
-    }
-
-    public void setInstitutionTestsAmount(String institutionTestsAmount) {
-        this.institutionTestsAmount = institutionTestsAmount;
-    }
-
-    public Long getInstitutionNumberOfTests() {
-        return institutionNumberOfTests;
-    }
-
-    public void setInstitutionNumberOfTests(Long institutionNumberOfTests) {
-        this.institutionNumberOfTests = institutionNumberOfTests;
     }
 }

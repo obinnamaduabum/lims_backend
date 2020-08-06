@@ -3,7 +3,7 @@ package com.hertfordshire.restfulapi.controller.dashboard;
 
 import com.hertfordshire.access.config.dto.UserDetailsDto;
 import com.hertfordshire.access.config.service.user_service.UserService;
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.model.psql.PortalUser;
 import com.hertfordshire.pojo.PatientDashboardInfoPojo;
 import com.hertfordshire.pubsub.redis.model.PortalUserModel;
@@ -11,6 +11,7 @@ import com.hertfordshire.service.psql.portaluser.PortalUserService;
 import com.hertfordshire.service.psql.test_order.TestOrderService;
 import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.controllers.ProtectedBaseApiController;
+import com.hertfordshire.utils.errors.MyApiResponse;
 import org.apache.http.util.TextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 @RestController
 public class ProtectedPatientDashboardController extends ProtectedBaseApiController {
 
-    private static final Logger logger = LoggerFactory.getLogger(PublicDashboardController.class.getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(ProtectedDashboardController.class.getSimpleName());
 
     @Autowired
     private TestOrderService testOrderService;
@@ -45,6 +46,9 @@ public class ProtectedPatientDashboardController extends ProtectedBaseApiControl
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    MyApiResponse myApiResponse;
 
 
     @GetMapping("/default/dashboard/patient")
@@ -81,10 +85,7 @@ public class ProtectedPatientDashboardController extends ProtectedBaseApiControl
             } catch (NullPointerException e) {
                 e.printStackTrace();
 
-                apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED, messageUtil.getMessage("user.unauthorized", "en"),
-                        false, new ArrayList<>(), null);
-
-                return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+                return new MyApiResponse().unAuthorizedResponse();
             }
 
 
@@ -103,15 +104,12 @@ public class ProtectedPatientDashboardController extends ProtectedBaseApiControl
                 }
             }
 
-
-            apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("user.creation.for.employee.successful", "en"),
-                    true, new ArrayList<>(), patientDashboardInfoPojo);
+            return myApiResponse.successfullyCreated(patientDashboardInfoPojo, "user.creation.for.employee.successful");
 
         } catch (Exception e) {
             e.printStackTrace();
-            apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("user.creation.for.employee.successful", "en"),
-                    false, new ArrayList<>(), null);
+            return myApiResponse.internalServerErrorResponse();
         }
-        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+
     }
 }

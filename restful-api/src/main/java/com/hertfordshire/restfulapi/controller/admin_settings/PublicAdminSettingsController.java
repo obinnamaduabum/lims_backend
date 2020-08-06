@@ -1,7 +1,6 @@
 package com.hertfordshire.restfulapi.controller.admin_settings;
 
-import com.google.gson.Gson;
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.dao.psql.AdminSettingsDao;
 import com.hertfordshire.model.psql.AdminSettings;
 import com.hertfordshire.pojo.AdminSettingsPojo;

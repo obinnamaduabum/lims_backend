@@ -21,11 +21,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class LabTestOrderDetailsServiceImpl implements LabTestOrderDetailsService {
 
     private final Logger logger = LoggerFactory.getLogger(LabTestOrderDetailsServiceImpl.class.getSimpleName());

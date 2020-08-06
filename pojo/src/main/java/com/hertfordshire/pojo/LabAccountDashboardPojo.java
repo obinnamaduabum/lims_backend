@@ -4,13 +4,10 @@ public class LabAccountDashboardPojo {
 
     private Long numberOfPatients;
 
-    private Long numberOfInstitutes;
-
     private Long totalNumberOfLabTestsOrdered;
 
     private Long numberOfPatientTestsOrdered;
 
-    private Long numberOfInstitutionTestsOrdered;
 
     public Long getNumberOfPatients() {
         return numberOfPatients;
@@ -18,14 +15,6 @@ public class LabAccountDashboardPojo {
 
     public void setNumberOfPatients(Long numberOfPatients) {
         this.numberOfPatients = numberOfPatients;
-    }
-
-    public Long getNumberOfInstitutes() {
-        return numberOfInstitutes;
-    }
-
-    public void setNumberOfInstitutes(Long numberOfInstitutes) {
-        this.numberOfInstitutes = numberOfInstitutes;
     }
 
     public Long getTotalNumberOfLabTestsOrdered() {
@@ -44,11 +33,4 @@ public class LabAccountDashboardPojo {
         this.numberOfPatientTestsOrdered = numberOfPatientTestsOrdered;
     }
 
-    public Long getNumberOfInstitutionTestsOrdered() {
-        return numberOfInstitutionTestsOrdered;
-    }
-
-    public void setNumberOfInstitutionTestsOrdered(Long numberOfInstitutionTestsOrdered) {
-        this.numberOfInstitutionTestsOrdered = numberOfInstitutionTestsOrdered;
-    }
 }

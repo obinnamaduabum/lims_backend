@@ -1,7 +1,7 @@
 package com.hertfordshire.restfulapi.controller;
 
-import com.hertfordshire.access.errors.ApiError;
-import com.hertfordshire.access.errors.CustomBadRequestException;
+import com.hertfordshire.utils.errors.ApiError;
+import com.hertfordshire.utils.errors.CustomBadRequestException;
 import com.hertfordshire.dto.ContactUsDto;
 import com.hertfordshire.mailsender.pojo.MailPojo;
 import com.hertfordshire.mailsender.service.EmailService;

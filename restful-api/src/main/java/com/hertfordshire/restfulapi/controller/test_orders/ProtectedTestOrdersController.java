@@ -3,8 +3,9 @@ package com.hertfordshire.restfulapi.controller.test_orders;
 import com.google.gson.Gson;
 import com.hertfordshire.access.config.dto.UserDetailsDto;
 import com.hertfordshire.access.config.service.user_service.UserService;
-import com.hertfordshire.access.errors.ApiError;
-import com.hertfordshire.access.errors.CustomBadRequestException;
+import com.hertfordshire.service.psql.sample_model_service.SampleModelService;
+import com.hertfordshire.utils.errors.ApiError;
+import com.hertfordshire.utils.errors.CustomBadRequestException;
 import com.hertfordshire.dao.psql.*;
 import com.hertfordshire.dto.LabTestSampleDto;
 import com.hertfordshire.dto.LabTestsOrderSearchDto;
@@ -13,7 +14,6 @@ import com.hertfordshire.model.psql.*;
 import com.hertfordshire.pojo.*;
 import com.hertfordshire.pubsub.redis.model.PortalUserModel;
 import com.hertfordshire.service.firebase.devices.FirebaseDeviceService;
-import com.hertfordshire.service.mongodb.NotificationMongodbService;
 import com.hertfordshire.service.psql.lab_test.LabTestService;
 import com.hertfordshire.service.psql.lab_test_order_details.LabTestOrderDetailsService;
 import com.hertfordshire.service.psql.portaluser.PortalUserService;
@@ -21,6 +21,7 @@ import com.hertfordshire.service.psql.test_order.TestOrderService;
 import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.Utils;
 import com.hertfordshire.utils.controllers.ProtectedBaseApiController;
+import com.hertfordshire.utils.errors.MyApiResponse;
 import com.hertfordshire.utils.lhenum.CurrencyTypeConstant;
 import com.hertfordshire.utils.lhenum.SampleTypeConstant;
 import org.apache.http.util.TextUtils;
@@ -34,6 +35,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -87,6 +89,13 @@ public class ProtectedTestOrdersController extends ProtectedBaseApiController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SampleModelService sampleModelService;
+
+
+    @Autowired
+    private MyApiResponse myApiResponse;
 
 //    @Autowired
 //    private NotificationMongodbService notificationMongodbService;
@@ -273,32 +282,6 @@ public class ProtectedTestOrdersController extends ProtectedBaseApiController {
                     labTestDetailsPojo.setUniqueId(labTestOrderDetail.getUniqueId());
 
 
-                    try {
-
-
-                        if (labTestOrderDetail.getPortalUserInstitutionLabTestOrderDetail() != null) {
-
-                            Optional<PortalUserInstitutionLabTestOrderDetail> optionalPILD = portalUserInstitutionLabTestOrderDetailDao.findById(
-                                    labTestOrderDetail.getPortalUserInstitutionLabTestOrderDetail().getId());
-
-
-                            if (optionalPILD.isPresent()) {
-                                InstitutionPatientInfoPojo institutionPatientInfoPojo = new InstitutionPatientInfoPojo();
-                                institutionPatientInfoPojo.setFirstName(optionalPILD.get().getFirstName());
-                                institutionPatientInfoPojo.setLastName(optionalPILD.get().getLastName());
-                                institutionPatientInfoPojo.setFileNumber(optionalPILD.get().getFileNumber());
-                                institutionPatientInfoPojo.setPhoneNumber(optionalPILD.get().getPhoneNumber());
-                                institutionPatientInfoPojo.setOtherName(optionalPILD.get().getOtherName());
-                                institutionPatientInfoPojo.setDateCreated(optionalPILD.get().getDateCreated());
-                                institutionPatientInfoPojo.setDateUpdated(optionalPILD.get().getDateUpdated());
-
-                                labTestDetailsPojo.setInstitutionPatientInfoPojo(institutionPatientInfoPojo);
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
                     if (CurrencyTypeConstant.valueOf(ordersModel.getCurrencyType().name()).equals(CurrencyTypeConstant.NGN)) {
                         labTestDetailsPojo.setPrice(Long.valueOf(Utils.koboToNaira(labTestOrderDetail.getPrice())));
                     } else if (CurrencyTypeConstant.valueOf(ordersModel.getCurrencyType().name()).equals(CurrencyTypeConstant.USD)) {
@@ -374,17 +357,18 @@ public class ProtectedTestOrdersController extends ProtectedBaseApiController {
                 apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("transaction.ref.success", lang),
                         false, new ArrayList<>(), null);
             }
-        } catch (Exception e) {
-            apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("transaction.ref.success", lang),
-                    false, new ArrayList<>(), null);
-            e.printStackTrace();
-        }
 
-        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+            return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+
+        } catch (Exception e) {
+
+            return myApiResponse.internalServerErrorResponse();
+        }
     }
 
 
     @PostMapping("/default/test-orders/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'RECEPTIONIST', 'PATHOLOGIST', 'MEDICAL_LAB_SCIENTIST')")
     public ResponseEntity<Object> updateSampleStatus(@PathVariable Long id,
                                                      @Valid @RequestBody LabTestSampleDto labTestSampleDto,
                                                      HttpServletResponse response,
@@ -395,7 +379,6 @@ public class ProtectedTestOrdersController extends ProtectedBaseApiController {
         UserDetailsDto requestPrincipal = null;
         String lang = "en";
         Long portalUserId = 0L;
-
 
         if (bindingResult.hasErrors()) {
 
@@ -413,7 +396,6 @@ public class ProtectedTestOrdersController extends ProtectedBaseApiController {
                     PortalUserModel portalUserModel = this.redisPortalUserService.fetchPortalUser(formOfIdentification);
                     portalUserId = portalUserModel.getId();
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -427,11 +409,7 @@ public class ProtectedTestOrdersController extends ProtectedBaseApiController {
 
             } catch (NullPointerException e) {
                 e.printStackTrace();
-
-                apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED, messageUtil.getMessage("user.unauthorized", "en"),
-                        false, new ArrayList<>(), null);
-
-                return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+                return new MyApiResponse().unAuthorizedResponse();
             }
 
 
@@ -439,171 +417,32 @@ public class ProtectedTestOrdersController extends ProtectedBaseApiController {
 
             try {
 
+                System.out.println(portalUser.getCode());
+
                 Optional<OrdersModel> optionalOrdersModel = this.orderIdService.findById(id);
-                OrdersModel ordersModel = null;
-                if (optionalOrdersModel.isPresent()) {
-                    ordersModel = optionalOrdersModel.get();
-                    if (!ordersModel.isCashCollected()) {
-                        apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("cash.not.collected", lang),
-                                false, new ArrayList<>(), null);
-                        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
-                    }
+
+                if (!optionalOrdersModel.isPresent()) {
+                    apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("test.order.not.found", lang),
+                            false, new ArrayList<>(), null);
+                    return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
                 }
+
+                OrdersModel ordersModel =  optionalOrdersModel.get();
+                if (!ordersModel.isCashCollected()) {
+                    apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("cash.not.collected", lang),
+                            false, new ArrayList<>(), null);
+                    return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+                }
+
                 Optional<LabTest> optionalLabTest = this.labTestService.findById(labTestSampleDto.getLabTestId());
                 LabTest labTest = null;
                 if (optionalLabTest.isPresent()) {
                     labTest = optionalLabTest.get();
                 }
 
-
-                LabTestOrderDetail labTestOrderDetail =
-                        this.labTestOrderDetailsService
-                                .findByOrdersModelAndLabTestAndUniqueId(ordersModel, labTest, labTestSampleDto.getUniqueId());
+                return sampleModelService.sample(ordersModel, labTest, labTestSampleDto, portalUser, apiError, lang);
 
 
-                SampleCollectedModel sampleCollectedModel = this.labTestOrderDetailsService
-                        .findSampleCollectionStatusByPortalUserAndLabTestOrderDetail(portalUser, labTestOrderDetail);
-
-
-                if (sampleCollectedModel == null) {
-
-                    sampleCollectedModel = this.labTestOrderDetailsService.updateSampleCollectionStatus(portalUser, labTestOrderDetail);
-
-                    PortalUser collectedBy = this.portalUserService.findById(sampleCollectedModel.getCollectedBy().getId());
-
-                    if (collectedBy != null) {
-
-                        PortalUserPojo portalUserPojo = new PortalUserPojo();
-                        portalUserPojo.setPhoneNumber(collectedBy.getPhoneNumber());
-                        portalUserPojo.setFirstName(collectedBy.getFirstName());
-                        portalUserPojo.setLastName(collectedBy.getLastName());
-                        portalUserPojo.setOtherName(collectedBy.getOtherName());
-
-                        SampleCollectionPojo sampleCollectionPojo = new SampleCollectionPojo();
-                        sampleCollectionPojo.setSampleCollected(sampleCollectedModel.getSampleCollected().toString().toUpperCase());
-                        sampleCollectionPojo.setCollectedBy(sampleCollectedModel.getCollectedBy().getId());
-                        // sampleCollectionPojo.setCollectedBy(sampleCollectedModel.getCollectedBy().getId());
-                        sampleCollectionPojo.setDateCreated(sampleCollectedModel.getDateCreated());
-                        sampleCollectionPojo.setDateUpdated(sampleCollectedModel.getDateUpdated());
-
-                        SampleAndPortalUserPojo sampleAndPortalUserPojo = new SampleAndPortalUserPojo();
-                        sampleAndPortalUserPojo.setPortalUserPojo(portalUserPojo);
-                        sampleAndPortalUserPojo.setSampleCollectionPojo(sampleCollectionPojo);
-
-                        ///////////// push notification
-
-//                        String url = "/dashboard/lab/orders/"+ ;
-//
-//                        String code = this.notificationMongodbService.getNotificationId();
-//
-//                        String title = this.messageUtil.getMessage("lab.test.ordered.by", lang) + " " + type;
-//                        this.producer.sendMessage(title, message, code, url, topics);
-//                        //  publish message to kafka
-//
-//                        //this.firebaseDevicesService.pushMessageToGroup(null, title, message, url, "APA91bGJWnPsbtMLAJ8_gMGu9ru9recYk1YqeC7-QrrgQPF6J9-CrORFVLBD6MF7fmuMP6MzMxi8CCftUy1sq-5gMIwmgurgKxNoasI03G27Fy8A9KaR6M1qo7y45twFZ_yVlB2DvtvZ");
-//                        logger.info("url: " + this.defaultDomainUrlTwo + url);
-//                        this.firebaseDevicesService.pushMessageToTopic(topics.stream().findFirst().orElse(""), title, message, code, url, null);
-
-                        //this.pushNotificationService.sendPushNotificationToTopic(topics.stream().findFirst().orElse(""), title, message, url);
-                        //  publish message to firebase
-
-                        ///////////// push notification
-
-                        apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("sample.collection.status", lang),
-                                true, new ArrayList<>(), sampleAndPortalUserPojo);
-
-                    } else {
-                        apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("sample.collection.status.failed", lang),
-                                false, new ArrayList<>(), null);
-                    }
-
-                } else {
-
-                   // logger.info("updating sample info ...");
-
-                    if(sampleCollectedModel.getSampleCollected().equals(SampleTypeConstant.SAMPLE_NOT_COLLECTED)){
-                        Optional<LabTest> optionalLabTest1 = this.labTestDao.findById(labTestOrderDetail.getLabTest().getId());
-                        if(optionalLabTest1.isPresent()) {
-                            LabTest labTest1 = optionalLabTest1.get();
-                            if (!TextUtils.isBlank(labTest1.getResultTemplateId())) {
-                                this.labTestOrderDetailsService.updateSampleCollectionStatus(labTestOrderDetail, portalUser);
-                            } else {
-                                apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("please.assign.template", lang),
-                                        false, new ArrayList<>(), null);
-                                return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
-                            }
-                        } else {
-                            logger.info("test not found");
-                        }
-
-
-
-                        PortalUser collectedBy = this.portalUserService.findById(sampleCollectedModel.getCollectedBy().getId());
-
-                        if (collectedBy != null) {
-
-                            PortalUserPojo portalUserPojo = new PortalUserPojo();
-                            portalUserPojo.setPhoneNumber(collectedBy.getPhoneNumber());
-                            portalUserPojo.setFirstName(collectedBy.getFirstName());
-                            portalUserPojo.setLastName(collectedBy.getLastName());
-                            portalUserPojo.setOtherName(collectedBy.getOtherName());
-
-                            SampleCollectionPojo sampleCollectionPojo = new SampleCollectionPojo();
-                            sampleCollectionPojo.setSampleCollected(sampleCollectedModel.getSampleCollected().toString().toUpperCase());
-                            sampleCollectionPojo.setCollectedBy(sampleCollectedModel.getCollectedBy().getId());
-                            // sampleCollectionPojo.setCollectedBy(sampleCollectedModel.getCollectedBy().getId());
-                            sampleCollectionPojo.setDateCreated(sampleCollectedModel.getDateCreated());
-                            sampleCollectionPojo.setDateUpdated(sampleCollectedModel.getDateUpdated());
-
-                            SampleAndPortalUserPojo sampleAndPortalUserPojo = new SampleAndPortalUserPojo();
-                            sampleAndPortalUserPojo.setPortalUserPojo(portalUserPojo);
-                            sampleAndPortalUserPojo.setSampleCollectionPojo(sampleCollectionPojo);
-
-
-//                            String url = "";
-//                            if (portalAccount.getPortalAccountType().equals(PortalAccountTypeConstant.PATIENT)) {
-//                                url = "/dashboard/lab/orders/" + ordersModel.getId();
-//                            }
-//
-//
-//                            //dashboard/lab/orders/13422
-//
-//                            if (portalAccount.getPortalAccountType().equals(PortalAccountTypeConstant.INSTITUTION)) {
-//                                url = "/dashboard/lab/orders/institution/" + ordersModel.getId();
-//                            }
-//
-//
-//                            String code = this.notificationMongodbService.getNotificationId();
-//
-//                            String title = this.messageUtil.getMessage("lab.test.ordered.by", lang) + " " + type;
-//                            this.producer.sendMessage(title, message, code, url, topics);
-//                            //  publish message to kafka
-//
-//                            //this.firebaseDevicesService.pushMessageToGroup(null, title, message, url, "APA91bGJWnPsbtMLAJ8_gMGu9ru9recYk1YqeC7-QrrgQPF6J9-CrORFVLBD6MF7fmuMP6MzMxi8CCftUy1sq-5gMIwmgurgKxNoasI03G27Fy8A9KaR6M1qo7y45twFZ_yVlB2DvtvZ");
-//                            logger.info("url: " + this.defaultDomainUrlTwo + url);
-//                            this.firebaseDevicesService.pushMessageToTopic(topics.stream().findFirst().orElse(""), title, message, code, url, null);
-//
-//                            //this.pushNotificationService.sendPushNotificationToTopic(topics.stream().findFirst().orElse(""), title, message, url);
-//                            //  publish message to firebase
-
-
-
-
-                            apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("sample.collection.status", lang),
-                                    true, new ArrayList<>(), sampleAndPortalUserPojo);
-                        } else {
-                            apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("sample.collection.status.failed", lang),
-                                    false, new ArrayList<>(), null);
-                        }
-                    } else if (sampleCollectedModel.getSampleCollected().equals(SampleTypeConstant.SAMPLE_COLLECTED)) {
-                        apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("sample.already.collected", lang),
-                                false, new ArrayList<>(), null);
-                        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
-                    } else {
-                        apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("sample.collection.status.failed", lang),
-                                false, new ArrayList<>(), null);
-                    }
-                }
             } catch (Exception e) {
 
                 e.printStackTrace();

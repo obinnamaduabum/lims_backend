@@ -14,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 public interface PatientService {
 
-    PortalUser create(PatientDto patientDto);
+    PortalUser create(PatientDto patientDto, boolean startUpAction);
 
     PortalUser updatePatient(PatientInfoUpdate employeeDto, PortalUser portalUser, PortalAccount foundPortalAccount);
 }

@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface PhoneNumberVerificationCodeDao extends JpaRepository<PhoneNumberVerificationCodes, Long> {
+
     List<PhoneNumberVerificationCodes> findByVerificationCodeAndDateCreatedBetween(String code, Date start, Date end);
 
     PhoneNumberVerificationCodes findByVerificationCode(String code);

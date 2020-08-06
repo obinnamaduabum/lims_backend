@@ -1,7 +1,7 @@
 package com.hertfordshire.access.config.service;
 
 import com.google.gson.Gson;
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.utils.MessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

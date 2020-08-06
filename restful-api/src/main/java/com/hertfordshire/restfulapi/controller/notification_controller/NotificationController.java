@@ -2,12 +2,11 @@ package com.hertfordshire.restfulapi.controller.notification_controller;
 
 import com.hertfordshire.access.config.dto.UserDetailsDto;
 import com.hertfordshire.access.config.service.user_service.UserService;
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.model.psql.PortalUser;
 import com.hertfordshire.pojo.PaginationResponsePojo;
 import com.hertfordshire.pubsub.redis.model.PortalUserModel;
 import com.hertfordshire.service.mongodb.NotificationCountMongoDbService;
-import com.hertfordshire.service.mongodb.NotificationMongodbService;
 import com.hertfordshire.service.psql.portaluser.PortalUserService;
 import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.controllers.ProtectedBaseApiController;

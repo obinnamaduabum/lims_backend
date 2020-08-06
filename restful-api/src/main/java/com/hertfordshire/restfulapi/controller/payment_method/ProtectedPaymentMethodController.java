@@ -3,11 +3,11 @@ package com.hertfordshire.restfulapi.controller.payment_method;
 import com.google.gson.Gson;
 import com.hertfordshire.access.config.dto.UserDetailsDto;
 import com.hertfordshire.access.config.service.user_service.UserService;
-import com.hertfordshire.access.errors.ApiError;
-import com.hertfordshire.access.errors.CustomBadRequestException;
+import com.hertfordshire.utils.errors.ApiError;
+import com.hertfordshire.utils.errors.CustomBadRequestException;
 import com.hertfordshire.dao.psql.PaymentMethodInfoDao;
 import com.hertfordshire.dto.PaymentMethodInfoDto;
-import com.hertfordshire.dto.PaymentTransAndReferredByDoesNotExistDto;
+import com.hertfordshire.dto.PaymentTransactionDto;
 import com.hertfordshire.dto.payment.FlutterWaveVerifyPaymentDto;
 import com.hertfordshire.model.psql.*;
 import com.hertfordshire.payment.dto.PaymentTransactionUpdateDto;
@@ -85,9 +85,14 @@ public class ProtectedPaymentMethodController extends ProtectedBaseApiController
     @Autowired
     private com.hertfordshire.pubsub.redis.service.portal_user.PortalUserService redisPortalUserService;
 
-//    @Autowired
-//    private NotificationMongodbService notificationMongodbService;
+    @Autowired
+    private NotificationMongodbService notificationMongodbService;
 
+
+    @Autowired
+    public ProtectedPaymentMethodController() {
+        this.gson = new Gson();
+    }
 
     @Value("${default.domainUrlTwo}")
     private String defaultDomainUrlTwo;
@@ -267,7 +272,6 @@ public class ProtectedPaymentMethodController extends ProtectedBaseApiController
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
-
     @GetMapping("/auth/payment-methods/transaction-ref")
     public ResponseEntity<Object> generateTransactionRef() {
 
@@ -321,10 +325,9 @@ public class ProtectedPaymentMethodController extends ProtectedBaseApiController
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
-
     ///////// orders are created here
     @PostMapping("/auth/payment/transaction/create")
-    public ResponseEntity<Object> createPaymentRecord(@Valid @RequestBody PaymentTransAndReferredByDoesNotExistDto paymentTransAndReferredByDoesNotExistDto,
+    public ResponseEntity<Object> createPaymentRecord(@Valid @RequestBody PaymentTransactionDto paymentTransactionDto,
                                                       HttpServletResponse response,
                                                       HttpServletRequest request,
                                                       Authentication authentication,
@@ -344,14 +347,18 @@ public class ProtectedPaymentMethodController extends ProtectedBaseApiController
 
         } else {
 
-
             try {
                 String formOfIdentification = userService.fetchFormOfIdentification();
 
                 if (!TextUtils.isBlank(formOfIdentification)) {
                     PortalUserModel portalUserModel = this.redisPortalUserService.fetchPortalUser(formOfIdentification);
-                    // logger.info("portalUserModelId: " + portalUserModel.getId());
-                    portalUserId = portalUserModel.getId();
+
+                    if(portalUserModel != null) {
+                        logger.info("portalUserModelId: " + portalUserModel.getId());
+                        portalUserId = portalUserModel.getId();
+                    } else {
+                        portalUserId = 0L;
+                    }
                 }
 
             } catch (Exception e) {
@@ -362,6 +369,7 @@ public class ProtectedPaymentMethodController extends ProtectedBaseApiController
 
                 if(portalUserId == 0L) {
                     requestPrincipal = userService.getPrincipal(response, request, authentication);
+                    logger.info("user " + requestPrincipal);
                     portalUserId = requestPrincipal.getId();
                 }
 
@@ -378,7 +386,7 @@ public class ProtectedPaymentMethodController extends ProtectedBaseApiController
 
 
             PaymentTransaction foundPaymentTransaction =
-                    this.paymentService.findByTransactionRef(paymentTransAndReferredByDoesNotExistDto.getPaymentTransactionDto().getTransactionRef());
+            this.paymentService.findByTransactionRef(paymentTransactionDto.getTransactionRef());
 
             if (foundPaymentTransaction != null) {
 
@@ -391,13 +399,11 @@ public class ProtectedPaymentMethodController extends ProtectedBaseApiController
             try {
 
                 PaymentMethodInfo paymentMethodInfo =
-                        this.paymentMethodConfigService.findByPaymentMethodName(paymentTransAndReferredByDoesNotExistDto.getPaymentTransactionDto().getTransactionTypeConstant());
+                this.paymentMethodConfigService.findByPaymentMethodName(paymentTransactionDto.getTransactionTypeConstant());
 
-                PaymentTransaction paymentTransaction = this.paymentService.save(paymentTransAndReferredByDoesNotExistDto.getPaymentTransactionDto(), paymentMethodInfo, portalUser);
-                OrdersModel ordersModel = this.orderIdService.create(paymentTransaction, paymentTransAndReferredByDoesNotExistDto.getPaymentTransactionDto(),
-                        paymentTransAndReferredByDoesNotExistDto.getReferredByDoesNotExistDto(), portalUser);
+                OrdersModel ordersModel = this.paymentService.save(paymentTransactionDto, paymentMethodInfo, portalUser);
 
-                String type = "";
+                String type;
 
                 Set<PortalAccount> portalAccountSet = null;
                 if(portalUser != null) {
@@ -409,8 +415,7 @@ public class ProtectedPaymentMethodController extends ProtectedBaseApiController
 
 
                 if(portalAccountSet != null) {
-//                List<PortalAccount> portalAccountList = new ArrayList<>(portalAccountSet);
-//                portalAccountList.
+
                     PortalAccount portalAccount = portalAccountSet.stream().findFirst().orElse(null);
 
                     if (portalAccount != null) {
@@ -442,10 +447,7 @@ public class ProtectedPaymentMethodController extends ProtectedBaseApiController
                             url = "/dashboard/lab/orders/" + ordersModel.getId();
                         }
 
-
-
-                        String code  = "";
-                                //= this.notificationMongodbService.getNotificationId();
+                        String code  = this.notificationMongodbService.getNotificationId();
 
                         String title = this.messageUtil.getMessage("lab.test.ordered.by", lang) + " " + type;
 

@@ -96,16 +96,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         AdminSettings adminSetting = adminSettingsList.stream().findFirst().orElse(null);
 
         if(adminSetting != null) {
-            long hours = Utils.getDifferenceBetweenTwoDates(portalUser.getWhenLoginAttemptFailedLast());
-            if (hours >= adminSetting.getAfterHoursPermitUserLoginAfterFailedAttempts()) {
-                Date now = new Date();
-                portalUser.setWhenLoginAttemptFailedLast(now);
-                portalUser.setFailedLoginAttempts(0);
-                portalUser = this.portalUserDao.save(portalUser);
 
-            } else {
-                if (portalUser.getFailedLoginAttempts() >= adminSetting.getNumberOfLoginAttemptsAllowedForAUser()) {
-                    throw new RuntimeException("blocked");
+            if(portalUser.getWhenLoginAttemptFailedLast() != null) {
+
+                long hours = Utils.getDifferenceBetweenTwoDates(portalUser.getWhenLoginAttemptFailedLast());
+
+                if (hours >= adminSetting.getAfterHoursPermitUserLoginAfterFailedAttempts()) {
+                    Date now = new Date();
+                    portalUser.setWhenLoginAttemptFailedLast(now);
+                    portalUser.setFailedLoginAttempts(0);
+                    portalUser = this.portalUserDao.save(portalUser);
+
+                } else {
+                    if (portalUser.getFailedLoginAttempts() >= adminSetting.getNumberOfLoginAttemptsAllowedForAUser()) {
+                        throw new RuntimeException("blocked");
+                    }
                 }
             }
         }

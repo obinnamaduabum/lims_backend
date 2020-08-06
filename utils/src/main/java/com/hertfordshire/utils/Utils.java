@@ -600,4 +600,16 @@ public class Utils {
             return false;
         }
     }
+
+
+    public BufferedReader myBufferReader(String TRANSFORMATION_DATA_FOLDER, String subFolder, String fileName) {
+
+        BufferedReader bufferedReader;
+
+        InputStream inputStream = ResourceUtil.getResourceAsStream(TRANSFORMATION_DATA_FOLDER + File.separator + subFolder + File.separator + fileName);
+
+        bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+        return bufferedReader;
+    }
 }

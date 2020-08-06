@@ -5,7 +5,6 @@ import com.hertfordshire.dao.psql.*;
 import com.hertfordshire.dto.LabTestsOrderSearchDto;
 import com.hertfordshire.dto.OrderDetailsDto;
 import com.hertfordshire.dto.PaymentTransactionDto;
-import com.hertfordshire.dto.ReferredByDoesNotExistDto;
 import com.hertfordshire.model.psql.*;
 import com.hertfordshire.pojo.LabTestDetailsPojo;
 import com.hertfordshire.pojo.LabTestOrderPojoReport;
@@ -14,7 +13,6 @@ import com.hertfordshire.pojo.PaginationResponsePojo;
 import com.hertfordshire.pojo.report.LabTestDetailsReportPojo;
 import com.hertfordshire.service.psql.portaluser.PortalUserService;
 import com.hertfordshire.service.sequence.order_details_unique_id.OrderDetailsUniqueIdSequenceService;
-import com.hertfordshire.service.sequence.order_id.OrderIdSequenceImpl;
 import com.hertfordshire.utils.PhoneNumberValidationUtil;
 import com.hertfordshire.utils.Utils;
 import com.hertfordshire.utils.lhenum.CurrencyTypeConstant;
@@ -525,16 +523,7 @@ public class TestOrderServiceImpl implements TestOrderService {
 
     @Transactional
     @Override
-    public OrdersModel create(PaymentTransaction paymentTransaction, PaymentTransactionDto paymentTransactionDto, ReferredByDoesNotExistDto referredByDoesNotExistDto, PortalUser portalUser) {
-
-
-//        String orderId = String.format("ORDER_%04d%02d%02d%05d",
-//                LocalDate.now().getYear(),
-//                LocalDate.now().getMonthValue(),
-//                LocalDate.now().getDayOfMonth(),
-//                orderIdSequence.getNextId()
-//        );
-
+    public OrdersModel create(PaymentTransaction paymentTransaction, PaymentTransactionDto paymentTransactionDto, PortalUser portalUser) {
 
         OrdersModel ordersModel = new OrdersModel();
 
@@ -596,7 +585,6 @@ public class TestOrderServiceImpl implements TestOrderService {
                         labTestOrderDetail.setPatient(portalUser);
                     }
 
-
                     if (CurrencyTypeConstant.valueOf(paymentTransactionDto.getCurrencyTypeConstant()).equals(CurrencyTypeConstant.NGN)) {
                         labTestOrderDetail.setPrice(Utils.nairaToKobo(orderDetailsDto.getPrice()));
                         labTestOrderDetail.setTotal(Utils.nairaToKobo(orderDetailsDto.getTotal()));
@@ -607,58 +595,6 @@ public class TestOrderServiceImpl implements TestOrderService {
                         labTestOrderDetail.setPrice(Long.valueOf(orderDetailsDto.getPrice()));
                         labTestOrderDetail.setTotal(Long.valueOf(orderDetailsDto.getTotal()));
                     }
-
-
-                    //////// save Institution lab test order portal user
-
-                    PortalUserInstitutionLabTestOrderDetail
-                            piltod =
-                            new PortalUserInstitutionLabTestOrderDetail();
-
-                    if (!TextUtils.isBlank(orderDetailsDto.getFirstName())) {
-                        piltod.setFirstName(orderDetailsDto.getFirstName());
-                    }
-
-                    if (!TextUtils.isBlank(orderDetailsDto.getLastName())) {
-                        piltod.setLastName(orderDetailsDto.getLastName());
-                    }
-
-                    if (!TextUtils.isBlank(orderDetailsDto.getOtherName())) {
-                        piltod.setOtherName(orderDetailsDto.getOtherName());
-                    }
-
-
-                    try {
-
-
-                        if (!TextUtils.isBlank(orderDetailsDto.getPhoneNumber()) && orderDetailsDto.getSelectedPhoneNumber() != null) {
-                            ProperPhoneNumberPojo properPhoneNumberPojo =
-                                    PhoneNumberValidationUtil.validatePhoneNumber(orderDetailsDto.getPhoneNumber(), orderDetailsDto.getSelectedPhoneNumber());
-
-                            if (properPhoneNumberPojo != null) {
-                                piltod.setPhoneNumber(properPhoneNumberPojo.getFormattedNumber());
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-
-                    if (!TextUtils.isBlank(orderDetailsDto.getFileNumber())) {
-                        piltod.setFileNumber(orderDetailsDto.getFileNumber());
-                    }
-
-
-                    if (!TextUtils.isBlank(orderDetailsDto.getFirstName()) && !TextUtils.isBlank(orderDetailsDto.getLastName())) {
-                        PortalUserInstitutionLabTestOrderDetail
-                                patientDetailsForInstitutionOrder =
-                                this.portalUserInstitutionLabTestOrderDetailDao.save(piltod);
-                        labTestOrderDetail.setPortalUserInstitutionLabTestOrderDetail(patientDetailsForInstitutionOrder);
-
-                    }
-
-                    ///////////////
-
 
                     this.labTestOrderDetailDao.save(labTestOrderDetail);
 

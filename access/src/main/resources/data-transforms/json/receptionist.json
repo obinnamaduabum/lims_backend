@@ -1,0 +1,24 @@
+{
+  "portalAccount": {
+    "name": "Lab",
+    "portalAccountTypes": "LAB"
+  },
+  "portalUser": {
+    "email": "receptionist@gmail.com",
+    "password": ":)Stickywordswill)901358",
+    "firstName": "receptionist firstname",
+    "lastName": "receptionist lastname",
+    "otherName": "",
+    "username": "receptionist",
+    "signUpType": "WEB",
+    "roles": [
+      "RECEPTIONIST"
+    ],
+    "isEmailVerified": true,
+    "isEmailOrPhoneNumberIsVerified": true,
+    "portalAccountCode": "",
+    "phoneNumber": "2348131038502",
+    "otherPhoneNumber": "",
+    "userStatus": "ACTIVE"
+  }
+}

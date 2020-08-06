@@ -36,7 +36,7 @@ public interface TestOrderService {
     List<Map<String, Object>> generateReceipt(LabTestOrdersPojo labTestOrdersPojo);
 
     @Transactional
-    OrdersModel create(PaymentTransaction paymentTransaction, PaymentTransactionDto paymentTransactionDto, ReferredByDoesNotExistDto referredByDoesNotExistDto, PortalUser portalUser);
+    OrdersModel create(PaymentTransaction paymentTransaction, PaymentTransactionDto paymentTransactionDto, PortalUser portalUser);
 
     Number countNumberOfOrdersForLoggedInUser(PortalUser portalUser);
 }

@@ -56,10 +56,10 @@ public class PortalUserServiceImp implements PortalUserService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    private String dateSource = "2000-09-09";
-
+    @Autowired
     private PortalAccountAndPortalUserRoleMapperDao portalAccountAndPortalUserRoleMapperDao;
 
+    private String dateSource = "2000-09-09";
 
     @Autowired
     public PortalUserServiceImp(){}
@@ -74,7 +74,6 @@ public class PortalUserServiceImp implements PortalUserService {
     public PortalUser findPortalUserByEmail(String email) {
         return portalUserDao.findPortalUserByEmail(email.toLowerCase());
     }
-
 
     @Override
     public PortalUser findPortalUserById(Long id) {
@@ -235,10 +234,7 @@ public class PortalUserServiceImp implements PortalUserService {
     @Override
     public boolean checkIfPasswordsmatch(CheckOldPasswordDto checkOldPasswordDto, PortalUser portalUser) {
         try {
-            if (this.bCryptPasswordEncoder.matches(checkOldPasswordDto.getOldPassword(), portalUser.getPassword())) {
-                return true;
-            }
-            return false;
+            return this.bCryptPasswordEncoder.matches(checkOldPasswordDto.getOldPassword(), portalUser.getPassword());
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -306,8 +302,6 @@ public class PortalUserServiceImp implements PortalUserService {
         List<RoleTypeConstant> roles = null;
 
         // logger.info(this.gson.toJson(employeeSearchDto.getRoles()));
-
-
 
         if(employeeSearchDto.getRoles().size() > 0) {
             roles = new ArrayList<>();
@@ -795,7 +789,9 @@ public class PortalUserServiceImp implements PortalUserService {
 
             ArrayList<String> roles = new ArrayList<>();
 
-            List<PortalAccountAndPortalUserRoleMappper> portalAccountAndPortalUserRoleMappperList = this.portalAccountAndPortalUserRoleMapperDao.findByPortalAccountCodeAndPortalUserCode(lookUpPortalAccount.getCode(), portalUserList.get(i).getCode());
+            List<PortalAccountAndPortalUserRoleMappper> portalAccountAndPortalUserRoleMappperList =
+            this.portalAccountAndPortalUserRoleMapperDao.findByPortalAccountCodeAndPortalUserCode(lookUpPortalAccount.getCode(), portalUserList.get(i).getCode());
+
             portalAccountAndPortalUserRoleMappperList.forEach(result -> {
 
                 Optional<Role> optionalRole = this.rolesDao.findById(result.getRoleId());

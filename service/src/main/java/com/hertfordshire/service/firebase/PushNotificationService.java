@@ -1,9 +1,8 @@
 package com.hertfordshire.service.firebase;
 
+import com.hertfordshire.pubsub.kafka.service.producer.Producer;
 import com.hertfordshire.service.firebase.devices.FirebaseDeviceService;
 
-import com.hertfordshire.pubsub.kafka.service.producer.Producer;
-import com.hertfordshire.service.firebase.devices.FirebaseDevicesServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +21,15 @@ public class PushNotificationService {
     private final String FIREBASE_SERVER_KEY = "YOUR_SERVER_KEY";
 
 
-//    @Autowired
-//    private Producer producer;
+    @Autowired
+    private Producer producer;
 
-
-    private FirebaseDeviceService firebaseDevicesService;
 
     @Autowired
+    private FirebaseDeviceService firebaseDevicesService;
+
+
     public PushNotificationService() {
-        firebaseDevicesService = new FirebaseDevicesServiceImpl();
     }
 
 //    public void sendPushNotification(List<String> keys, String messageTitle, String message) {
@@ -76,7 +75,7 @@ public class PushNotificationService {
     @Transactional
     public void sendPushNotificationToFCMAndKafka(String title, String message, String code, String url, List<String> topics) {
 
-            //this.producer.sendMessage(title, message, code, url, topics);
+            this.producer.sendMessage(title, message, code, url, topics);
             //  publish message to kafka
 
             //this.firebaseDevicesService.pushMessageToGroup(null, title, message, url, "APA91bGJWnPsbtMLAJ8_gMGu9ru9recYk1YqeC7-QrrgQPF6J9-CrORFVLBD6MF7fmuMP6MzMxi8CCftUy1sq-5gMIwmgurgKxNoasI03G27Fy8A9KaR6M1qo7y45twFZ_yVlB2DvtvZ");

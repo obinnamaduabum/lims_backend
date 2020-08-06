@@ -19,3 +19,7 @@ mvn clean spring-boot:run -Dspring.profiles.active=dev
 
 //run below code - from inside restful-api
 mvn clean spring-boot:run -Dspring.profiles.active=test
+
+
+sudo lsof -i tcp:5432
+kill -9 1145

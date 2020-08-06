@@ -2,13 +2,12 @@ package com.hertfordshire.restfulapi.controller.authentication;
 
 
 import com.hertfordshire.access.config.service.user_service.UserService;
-import com.hertfordshire.access.errors.ApiError;
-import com.hertfordshire.access.errors.CustomBadRequestException;
+import com.hertfordshire.utils.errors.ApiError;
+import com.hertfordshire.utils.errors.CustomBadRequestException;
 import com.hertfordshire.dto.LoginDto;
 import com.hertfordshire.mailsender.service.EmailService;
 import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.controllers.PublicBaseApiController;
-import lombok.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

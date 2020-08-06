@@ -1,6 +1,6 @@
 package com.hertfordshire.restfulapi.controller.lab_test_category_controller;
 
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.model.psql.LabTest;
 import com.hertfordshire.model.psql.LabTestCategory;
 import com.hertfordshire.pojo.LabTestCategoryPojo;

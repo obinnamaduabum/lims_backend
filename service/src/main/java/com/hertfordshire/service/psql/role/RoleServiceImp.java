@@ -22,23 +22,22 @@ public class RoleServiceImp implements RolesService {
 
     private static Logger logger = Logger.getLogger(RoleServiceImp.class.getSimpleName());
 
-//    @Autowired
-//    private Gson gson;
 
+    private Gson gson;
+
+    @Autowired
     private RolesDao rolesDao;
 
+    @Autowired
     private PortalAccountAndPortalUserRoleMapperService portalAccountAndPortalUserRoleMapperService;
 
+    @Autowired
     private PrivilegeService privilegeService;
 
 
     @Autowired
-    public RoleServiceImp(RolesDao rolesDao,
-                          PrivilegeService privilegeService,
-                          PortalAccountAndPortalUserRoleMapperService portalAccountAndPortalUserRoleMapperService) {
-        this.privilegeService = privilegeService;
-        this.rolesDao = rolesDao;
-        this.portalAccountAndPortalUserRoleMapperService = portalAccountAndPortalUserRoleMapperService;
+    public RoleServiceImp() {
+       this.gson = new Gson();
     }
 
     @Override

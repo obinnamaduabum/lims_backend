@@ -1,0 +1,16 @@
+{
+  "email": "mypatient@gmail.com",
+  "firstName": "patient",
+  "gender": "MALE",
+  "lastName": "my patient",
+  "nextOFKinFirstName": "cool",
+  "nextOFKinLastName": "test",
+  "nextOFKinPhoneNumber": "2340816123344",
+  "nextOFKinPhoneNumberObj": {"id": "161", "name": "Nigeria", "alpha2": "NG", "alpha3": "NGA", "internationalPhoneNumber": "234"},
+  "otherName": "test",
+  "otherPhoneNumberObj": {"id": "161", "name": "Nigeria", "alpha2": "NG", "alpha3": "NGA", "internationalPhoneNumber": "234"},
+  "password": "flash01234",
+  "phoneNumber": "23408056718996",
+  "phoneNumberObj": {"id": "161", "name": "Nigeria", "alpha2": "NG", "alpha3": "NGA", "internationalPhoneNumber": "234"},
+  "twoFactor": ""
+}

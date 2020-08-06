@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.hertfordshire.dto.AdminSettingsDto;
 import com.hertfordshire.service.psql.settings.admin.AdminSettingsService;
 import com.hertfordshire.utils.ResourceUtil;
+import com.hertfordshire.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,11 +32,8 @@ public class CreateAdminSettingsJsonTransform {
 
     public void create() {
 
-        BufferedReader bufferedReader;
-
-        InputStream inputStream = ResourceUtil.getResourceAsStream(TRANSFORMATION_DATA_FOLDER + File.separator + JSON_FOLDER + File.separator + ADMIN_SETTINGS_FILE_NAME);
-
-        bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader bufferedReader  =
+        new Utils().myBufferReader(TRANSFORMATION_DATA_FOLDER, JSON_FOLDER, ADMIN_SETTINGS_FILE_NAME);
 
         AdminSettingsDto adminSettingsDto = gson.fromJson(bufferedReader, AdminSettingsDto.class);
 

@@ -1,0 +1,24 @@
+{
+  "portalAccount": {
+    "name": "Lab",
+    "portalAccountTypes": "LAB"
+  },
+  "portalUser": {
+    "email": "pathologist@gmail.com",
+    "password": ":)Stickywordswill)901358",
+    "firstName": "Pathologist",
+    "lastName": "pathologist lastname",
+    "otherName": "",
+    "username": "Pathologist",
+    "signUpType": "WEB",
+    "roles": [
+      "PATHOLOGIST"
+    ],
+    "isEmailVerified": true,
+    "isEmailOrPhoneNumberIsVerified": true,
+    "portalAccountCode": "",
+    "phoneNumber": "2348131038501",
+    "otherPhoneNumber": "",
+    "userStatus": "ACTIVE"
+  }
+}

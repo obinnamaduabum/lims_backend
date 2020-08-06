@@ -1,7 +1,7 @@
 package com.hertfordshire.restfulapi.controller.lab_test_controller;
 
 import com.google.gson.Gson;
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.dao.psql.LabTestCategoriesDao;
 import com.hertfordshire.dto.LabTestSearchDto;
 import com.hertfordshire.model.psql.AdminSettings;

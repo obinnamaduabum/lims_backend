@@ -22,7 +22,7 @@ import java.io.IOException;
 @SpringBootApplication(scanBasePackages = "com.hertfordshire")
 @EnableJpaRepositories(basePackages = {"com.hertfordshire.dao", "com.hertfordshire.payment.dao", "com.hertfordshire.pubsub.redis.dao"})
 @EntityScan(basePackages = {"com.hertfordshire.model","com.hertfordshire.access", "com.hertfordshire.payment.model"})
-//@EnableMongoRepositories(basePackages = "com.hertfordshire.dao.mongodb")
+@EnableMongoRepositories(basePackages = "com.hertfordshire.dao.mongodb")
 @EnableJpaAuditing
 public class RestfulApiApplication extends SpringBootServletInitializer {
 

@@ -1,6 +1,6 @@
 package com.hertfordshire.restfulapi.controller.lab_test_controller;
 
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.dto.LabTestDto;
 import com.hertfordshire.model.psql.LabTest;
 import com.hertfordshire.pojo.ErrorsPojo;

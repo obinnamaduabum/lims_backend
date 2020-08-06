@@ -36,10 +36,6 @@ public class LabTestOrderDetail {
     private PortalUser patient;
 
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "institution_patient_id", referencedColumnName = "id")
-    private PortalUserInstitutionLabTestOrderDetail portalUserInstitutionLabTestOrderDetail;
-
     private Long quantity;
 
     private Long total;
@@ -147,14 +143,6 @@ public class LabTestOrderDetail {
 
     public void setUniqueId(String uniqueId) {
         this.uniqueId = uniqueId;
-    }
-
-    public PortalUserInstitutionLabTestOrderDetail getPortalUserInstitutionLabTestOrderDetail() {
-        return portalUserInstitutionLabTestOrderDetail;
-    }
-
-    public void setPortalUserInstitutionLabTestOrderDetail(PortalUserInstitutionLabTestOrderDetail portalUserInstitutionLabTestOrderDetail) {
-        this.portalUserInstitutionLabTestOrderDetail = portalUserInstitutionLabTestOrderDetail;
     }
 
     public PortalUser getPatient() {

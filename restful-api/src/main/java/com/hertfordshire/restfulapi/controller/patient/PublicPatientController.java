@@ -1,7 +1,7 @@
 package com.hertfordshire.restfulapi.controller.patient;
 
-import com.hertfordshire.access.errors.ApiError;
-import com.hertfordshire.access.errors.CustomBadRequestException;
+import com.hertfordshire.utils.errors.ApiError;
+import com.hertfordshire.utils.errors.CustomBadRequestException;
 import com.hertfordshire.dto.PatientDto;
 import com.hertfordshire.model.psql.PortalUser;
 import com.hertfordshire.service.psql.patient.PatientService;
@@ -132,7 +132,7 @@ public class PublicPatientController extends PublicBaseApiController {
 
             try {
 
-                portalUser = patientService.create(patientDto);
+                portalUser = patientService.create(patientDto, false);
 
 
 

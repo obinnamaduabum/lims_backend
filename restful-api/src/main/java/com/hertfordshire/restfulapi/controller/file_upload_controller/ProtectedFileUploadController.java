@@ -1,8 +1,8 @@
 //package com.hertfordshire.restfulapi.com.hertfordshire.restfulapi.controller.file_upload_controller;
 //
 //import com.google.gson.Gson;
-//import com.hertfordshire.access.errors.ApiError;
-//import com.hertfordshire.access.errors.CustomBadRequestException;
+//import com.hertfordshire.utils.errors.ApiError;
+//import com.hertfordshire.utils.errors.CustomBadRequestException;
 ////import com.hertfordshire.fileupload.dto.CroppedFileUploadDto;
 ////import com.hertfordshire.fileupload.dto.CustomMultipartFileDto;
 ////import com.merlinlabs.fileupload.dto.ImageResolutionDto;

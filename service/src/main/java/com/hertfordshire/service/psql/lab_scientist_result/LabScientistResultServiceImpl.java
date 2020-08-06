@@ -211,14 +211,13 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
                     labTestsOrderedPojo.setOrderId(order.getId());
 
                     PortalUser portalUser =
-                            this.portalUserService.findPortalUserById(order.getPortalUser().getId());
+                    this.portalUserService.findPortalUserById(order.getPortalUser().getId());
 
                     PortalAccount portalAccount =
-                            portalUser.getPortalAccounts().stream().findFirst().orElse(null);
+                    portalUser.getPortalAccounts().stream().findFirst().orElse(null);
 
                     if (portalAccount != null) {
-                        labTestsOrderedPojo.setAccountType(
-                                portalAccount.getPortalAccountType().name());
+                        labTestsOrderedPojo.setAccountType(portalAccount.getPortalAccountType().name());
                     }
 
                 } catch (Exception e) {
@@ -243,7 +242,7 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
             }
 
             PortalUserInstitutionLabTestOrderDetail unregisteredPatient =
-                    (PortalUserInstitutionLabTestOrderDetail) rows.get(i)[4];
+            (PortalUserInstitutionLabTestOrderDetail) rows.get(i)[4];
 
 
             if (unregisteredPatient != null) {

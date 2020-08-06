@@ -2,7 +2,7 @@ package com.hertfordshire.restfulapi.controller.firebase;
 
 import com.hertfordshire.access.config.dto.UserDetailsDto;
 import com.hertfordshire.access.config.service.user_service.UserService;
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.model.psql.KafkaSubscription;
 import com.hertfordshire.model.psql.KafkaTopicModel;
 import com.hertfordshire.model.psql.PortalUser;

@@ -8,17 +8,14 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.hertfordshire.access.config.dto.UserDetailsDto;
 import com.hertfordshire.access.config.service.user_service.UserService;
-import com.hertfordshire.access.errors.ApiError;
-import com.hertfordshire.access.errors.CustomBadRequestException;
+import com.hertfordshire.utils.errors.ApiError;
+import com.hertfordshire.utils.errors.CustomBadRequestException;
 import com.hertfordshire.dao.psql.PortalAccountAndPortalUserRoleMapperDao;
-import com.hertfordshire.dao.psql.PortalAccountDao;
 import com.hertfordshire.dao.psql.PortalUserDao;
 import com.hertfordshire.dto.*;
 import com.hertfordshire.model.psql.*;
 import com.hertfordshire.pojo.*;
-import com.hertfordshire.restfulapi.MyApiResponse;
 import com.hertfordshire.service.psql.portal_account_role_mapper.PortalAccountAndPortalUserRoleMapperService;
-import com.hertfordshire.service.psql.portalaccount.PortalAccountService;
 import com.hertfordshire.service.psql.portaluser.PortalUserService;
 import com.hertfordshire.service.psql.portaluser.PortalUserServiceImp;
 import com.hertfordshire.service.psql.role.RolesService;
@@ -26,11 +23,10 @@ import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.PhoneNumberValidationUtil;
 import com.hertfordshire.utils.Utils;
 import com.hertfordshire.utils.controllers.ProtectedBaseApiController;
+import com.hertfordshire.utils.errors.MyApiResponse;
 import com.hertfordshire.utils.lhenum.GenericStatusConstant;
-import com.hertfordshire.utils.lhenum.ProfileImageConstant;
 import com.hertfordshire.utils.lhenum.RoleTypeConstant;
 import com.hertfordshire.utils.pojo.ProperPhoneNumberPojo;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.TextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -174,7 +170,7 @@ public class ProtectedPortalUserController extends ProtectedBaseApiController {
 
         } catch (NullPointerException e) {
 
-            return new MyApiResponse().unAuthenticated(e, apiError);
+            return new com.hertfordshire.utils.errors.MyApiResponse().unAuthorizedResponse();
         }
     }
 
@@ -252,7 +248,7 @@ public class ProtectedPortalUserController extends ProtectedBaseApiController {
 
         } catch (NullPointerException e) {
 
-            return new MyApiResponse().unAuthenticated(e, apiError);
+            return new MyApiResponse().unAuthorizedResponse();
         }
     }
 
@@ -262,6 +258,7 @@ public class ProtectedPortalUserController extends ProtectedBaseApiController {
                                           HttpServletResponse res,
                                           HttpServletRequest request,
                                           Authentication authentication) {
+
         ApiError apiError = null;
         PortalUser portalUser = null;
         String portalAccountCode = null;
@@ -618,7 +615,7 @@ public class ProtectedPortalUserController extends ProtectedBaseApiController {
 
             } catch (NullPointerException e) {
 
-                return new MyApiResponse().unAuthenticated(e, apiError);
+                return new MyApiResponse().unAuthorizedResponse();
             }
         }
     }
@@ -660,7 +657,7 @@ public class ProtectedPortalUserController extends ProtectedBaseApiController {
                 return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 
             } catch (NullPointerException e) {
-                return new MyApiResponse().unAuthenticated(e, apiError);
+                return new MyApiResponse().unAuthorizedResponse();
             }
         }
     }

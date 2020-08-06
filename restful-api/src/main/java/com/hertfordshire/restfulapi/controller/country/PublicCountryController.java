@@ -1,11 +1,12 @@
 package com.hertfordshire.restfulapi.controller.country;
 
 
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.model.psql.Country;
 import com.hertfordshire.service.psql.country.CountryService;
 import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.controllers.PublicBaseApiController;
+import com.hertfordshire.utils.errors.MyApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,15 +28,19 @@ public class PublicCountryController extends PublicBaseApiController {
     @Autowired
     private CountryService countryService;
 
+    @Autowired
+    private MyApiResponse myApiResponse;
+
     @GetMapping("/auth/country/")
     public ResponseEntity<?> index(HttpServletResponse res, HttpServletRequest request) {
 
-        List<Country> countryList = countryService.findAll();
-        ApiError apiError = null;
+        try {
 
-        apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("list.of.countries", "en"),
-                true, new ArrayList<>(), countryList);
+            List<Country> countryList = countryService.findAll();
+            return myApiResponse.successful(countryList, "list.of.countries");
 
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        } catch (Exception e) {
+            return myApiResponse.internalServerErrorResponse();
+        }
     }
 }

@@ -30,54 +30,44 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 
 @Service
+@Transactional
 public class PatientServiceImpl implements PatientService {
 
+    @Autowired
     private PortalUserSequenceService portalUserSequenceService;
 
+    @Autowired
     private PortalAccountService portalAccountService;
 
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private PortalAccountSequenceService portalAccountSequenceService;
-
+    @Autowired
     private PortalUserDao portalUserDao;
 
+    @Autowired
     private PortalAccountAndPortalUserRoleMapperService portalAccountAndPortalUserRoleMapperService;
 
+    @Autowired
     private RolesService rolesService;
 
+    @Autowired
     private KafkaTopicService kafkaTopicService;
 
+    @Autowired
     private KafkaSubscriptionService kafkaSubscriptionService;
 
 
-    public PatientServiceImpl(PortalAccountService portalAccountService,
-                              PortalUserSequenceService portalUserSequenceService,
-                              PortalUserDao portalUserDao,
-                              PortalAccountAndPortalUserRoleMapperService portalAccountAndPortalUserRoleMapperService,
-                              PasswordEncoder passwordEncoder,
-                              PortalAccountSequenceService portalAccountSequenceService,
-                              RolesService rolesService,
-                              KafkaTopicService kafkaTopicService,
-                              KafkaSubscriptionService kafkaSubscriptionService) {
-        this.portalAccountAndPortalUserRoleMapperService = portalAccountAndPortalUserRoleMapperService;
-        this.portalUserDao = portalUserDao;
-        this.portalUserSequenceService = portalUserSequenceService;
-        this.portalAccountService = portalAccountService;
-        this.passwordEncoder = passwordEncoder;
-        this.portalAccountSequenceService = portalAccountSequenceService;
-        this.rolesService = rolesService;
-        this.kafkaSubscriptionService = kafkaSubscriptionService;
-        this.kafkaTopicService = kafkaTopicService;
-    }
+    public PatientServiceImpl(){ }
 
     @Transactional
     @Override
-    public PortalUser create(PatientDto patientDto) {
+    public PortalUser create(PatientDto patientDto, boolean startUpAction) {
 
         List<String> roles = new ArrayList<>();
         roles.add(RoleTypeConstant.USER.toString());
@@ -89,16 +79,7 @@ public class PatientServiceImpl implements PatientService {
         portalAccountDto.setName(patientDto.getFirstName() + " " + patientDto.getLastName());
         portalAccountDto.setPortalAccountTypes(PortalAccountTypeConstant.PATIENT.name());
 
-
-        if(this.portalAccountSequenceService == null) {
-            System.out.println("portalAccountSequenceService is null");
-        }
-
-        if(portalAccountService == null) {
-            System.out.println("portalAccountService is null");
-        }
-
-        PortalAccount portalAccount = portalAccountService.save(portalAccountDto);
+        PortalAccount portalAccount = this.portalAccountService.save(portalAccountDto);
 
         PortalUser portalUser = new PortalUser();
         portalUser.setFirstName(patientDto.getFirstName());
@@ -130,7 +111,15 @@ public class PatientServiceImpl implements PatientService {
         portalUser.setNextOFKinPhoneNumber(patientDto.getNextOFKinPhoneNumber());
         portalUser.setCreatedBy(null);
         portalUser.setUserStatus(GenericStatusConstant.INACTIVE);
-        portalUser.getPortalAccounts().add(portalAccount);
+
+        if(portalUser.getPortalAccounts() != null){
+            portalUser.getPortalAccounts().add(portalAccount);
+        } else {
+            HashSet<PortalAccount> hashSet = new HashSet<>();
+            hashSet.add(portalAccount);
+            portalUser.setPortalAccounts(hashSet);
+        }
+
         portalUser.setTwoFactor(patientDto.isTwoFactor());
 
         if(patientDto.isTwoFactor()) {
@@ -139,10 +128,18 @@ public class PatientServiceImpl implements PatientService {
             portalUser.setSecret(secret);
         }
 
-        portalUser = portalUserDao.save(portalUser);
-        if(patientDto.getRoles() != null) {
-            portalAccountAndPortalUserRoleMapperService.saveUserBeingRegisteredsRoles(portalAccount, portalUser, patientDto.getRoles());
+        if(startUpAction) {
+            portalUser.setUserStatus(GenericStatusConstant.ACTIVE);
+            portalUser.setEmailOrPhoneNumberIsVerified(true);
+            portalUser.setEmailVerified(true);
         }
+
+
+        portalUser = this.portalUserDao.save(portalUser);
+        if(patientDto.getRoles() != null) {
+            this.portalAccountAndPortalUserRoleMapperService.saveUserBeingRegisteredsRoles(portalAccount, portalUser, patientDto.getRoles());
+        }
+
         return portalUser;
 
     }

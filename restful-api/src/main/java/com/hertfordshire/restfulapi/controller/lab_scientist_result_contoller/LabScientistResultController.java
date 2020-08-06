@@ -1,14 +1,8 @@
 package com.hertfordshire.restfulapi.controller.lab_scientist_result_contoller;
 
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.dto.OrderedLabTestSearchDto;
-import com.hertfordshire.model.mongodb.LabTestResultMongoDb;
-import com.hertfordshire.model.mongodb.LabTestTemplateMongoDb;
-import com.hertfordshire.pojo.LabTestTemplateAndResultPojo;
 import com.hertfordshire.pojo.PaginationResponsePojo;
-import com.hertfordshire.service.mongodb.LabTestResultMongoDbService;
-import com.hertfordshire.service.mongodb.LabTestTemplateMongoDbService;
-import com.hertfordshire.service.psql.lab_scientist_result.LabScientistResultService;
 import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.controllers.ProtectedBaseApiController;
 import org.slf4j.Logger;

@@ -32,27 +32,15 @@ public class PortalAccountServiceImp implements PortalAccountService {
     private static final Logger logger = Logger.getLogger(PortalAccountServiceImp.class.getSimpleName());
 
 
+    @Autowired
     private PortalAccountDao portalAccountDao;
 
+    @Autowired
     private RolesDao rolesDao;
 
 
     @Autowired
-    @PortalUserSequence
-    private PortalUserSequenceService portalUserSequenceService;
-
-
-    @Autowired
     PortalAccountSequenceService portalAccountSequenceService;
-
-
-    @Autowired
-    public PortalAccountServiceImp(PortalAccountDao portalAccountDao,
-                                   RolesDao rolesDao,
-                                   PortalAccountSequenceService portalAccountSequence) {
-        this.portalAccountDao = portalAccountDao;
-        this.rolesDao = rolesDao;
-    }
 
 
     public void setPortalAccountDao(PortalAccountDao portalAccountDao) {

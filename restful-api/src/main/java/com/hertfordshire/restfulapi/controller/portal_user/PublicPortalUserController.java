@@ -1,19 +1,15 @@
 package com.hertfordshire.restfulapi.controller.portal_user;
 
 import com.google.gson.Gson;
-import com.hertfordshire.access.config.service.user_service.UserService;
-import com.hertfordshire.access.errors.ApiError;
-import com.hertfordshire.access.errors.CustomBadRequestException;
-import com.hertfordshire.dao.psql.PortalUserDao;
+import com.hertfordshire.utils.errors.ApiError;
+import com.hertfordshire.utils.errors.CustomBadRequestException;
 import com.hertfordshire.dto.*;
 import com.hertfordshire.mailsender.pojo.MailPojo;
 import com.hertfordshire.mailsender.service.EmailService;
 import com.hertfordshire.model.psql.*;
 import com.hertfordshire.service.psql.email_verification.EmailVerificationService;
 import com.hertfordshire.service.psql.phone_number_verification_code.PhoneNumberVerificationCodeService;
-import com.hertfordshire.service.psql.portalaccount.PortalAccountService;
 import com.hertfordshire.service.psql.portaluser.PortalUserService;
-import com.hertfordshire.service.psql.role.RolesService;
 import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.PhoneNumberValidationUtil;
 import com.hertfordshire.utils.Utils;
@@ -21,12 +17,6 @@ import com.hertfordshire.utils.controllers.PublicBaseApiController;
 import com.hertfordshire.utils.lhenum.TypeOfPhoneNumberVerification;
 import com.hertfordshire.utils.pojo.PhoneCodesPojo;
 import com.hertfordshire.utils.pojo.ProperPhoneNumberPojo;
-import dev.samstevens.totp.code.CodeGenerator;
-import dev.samstevens.totp.code.CodeVerifier;
-import dev.samstevens.totp.code.DefaultCodeGenerator;
-import dev.samstevens.totp.code.DefaultCodeVerifier;
-import dev.samstevens.totp.time.SystemTimeProvider;
-import dev.samstevens.totp.time.TimeProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.TextUtils;
 import org.slf4j.Logger;
@@ -87,6 +77,7 @@ public class PublicPortalUserController extends PublicBaseApiController {
     private PhoneNumberVerificationCodeService phoneNumberVerificationCodeService;
 
 
+    @Autowired
     public PublicPortalUserController() {
         this.gson = new Gson();
     }
@@ -246,7 +237,6 @@ public class PublicPortalUserController extends PublicBaseApiController {
         }
     }
     // Check if already exists
-
     @PostMapping("/auth/portal-user/phone_number/exists/{code}")
     public ResponseEntity<Object> findForEmployeeByPhoneNumber(@Valid @RequestBody PhoneNumberExistsDto phoneNumberExistsDto,
                                                                @PathVariable("code") String portalUserCode,
@@ -296,7 +286,6 @@ public class PublicPortalUserController extends PublicBaseApiController {
     public ResponseEntity<Object> sendVerificationCodeViaEmail(@Valid @RequestBody SendVerificationCodeToEmailDto sendVerificationCodeToEmailDto,
                                                                HttpServletRequest request,
                                                                BindingResult bindingResult) {
-
         ApiError apiError = null;
 
         if (bindingResult.hasErrors()) {

@@ -1,6 +1,6 @@
 package com.hertfordshire.restfulapi.controller.portal_account;
 
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.model.psql.PortalAccount;
 import com.hertfordshire.service.psql.portalaccount.PortalAccountService;
 import com.hertfordshire.utils.MessageUtil;

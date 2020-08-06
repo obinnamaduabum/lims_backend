@@ -72,20 +72,25 @@ public class UserServiceImpl implements UserService {
 
                 String username = ((UserDetails) principal).getUsername();
 
+                logger.info("username "+ username);
+
+
                 if (EmailValidator.getInstance(true).isValid(username.toLowerCase())) {
                     portalUser = portalUserDao.findByEmail(username.toLowerCase());
                 } else if (checkIfValidNumber(username)) {
                     portalUser = portalUserDao.findByPhoneNumber(username.toLowerCase().trim());
+                    logger.info("portaluser " + portalUser.getCode());
                 }
 
                 List<PortalAccountDescriptionDto> portalAccountDescriptionDtoLists = new ArrayList<>();
 
                 if (portalUser != null) {
 
-
                     portalUserCode = portalUser.getCode();
 
                     List<PortalAccount> newPortalAccounts = new ArrayList<>(portalUser.getPortalAccounts());
+
+                    logger.info("account list " + newPortalAccounts.size());
 
                     for (int c = 0; c < newPortalAccounts.size(); c++) {
 
@@ -94,11 +99,13 @@ public class UserServiceImpl implements UserService {
                             // logger.info(""+newPortalAccounts.get(c));
                             // logger.info(""+newPortalAccounts.get(c).getCode());
                             portalAccount = newPortalAccounts.get(c);
+                            logger.info("account: " + portalAccount.getCode());
+
                             portalAccountCode = newPortalAccounts.get(c).getCode();
                         }
 
                         List<PortalAccountAndPortalUserRoleMappper> portalAccountAndPortalUserRoleMappperList =
-                                this.portalAccountAndPortalUserRoleMapperService.findByPortalAccountCodeAndPortalUserCode(portalAccountCode, portalUserCode);
+                        this.portalAccountAndPortalUserRoleMapperService.findByPortalAccountCodeAndPortalUserCode(portalAccountCode, portalUserCode);
 
 
                         PortalAccountDescriptionDto portalAccountDescriptionDto = new PortalAccountDescriptionDto();
@@ -147,6 +154,8 @@ public class UserServiceImpl implements UserService {
                 UserDetailsDto userDetailsDto = new UserDetailsDto(((UserDetails) principal).getUsername(),
                         ((UserDetails) principal).getPassword(), true, true, true, true,
                         getAuthorities(roles));
+
+                logger.info(portalAccount.getCode());
 
                 userDetailsDto.setUserDetails(portalUser, portalAccount, portalAccountDescriptionDtoLists);
 

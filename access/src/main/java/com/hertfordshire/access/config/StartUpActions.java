@@ -45,6 +45,12 @@ public class StartUpActions {
     private CreateKafkaTopicsJsonTransform createKafkaTopicsJsonTransform;
 
 
+    @Autowired
+    private CreatePatientJsonTransform createPatientJsonTransform;
+
+    @Autowired
+    private CreateLabUsersJsonTransform createLabUsersJsonTransform;
+
     @PostConstruct()
     public void initialize() {
 
@@ -93,19 +99,32 @@ public class StartUpActions {
         }
 
         try {
-           // createAdminSettingsJsonTransform.create();
+            createAdminSettingsJsonTransform.create();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-           // createPortalUserJsonTransformer.createPortalUser();
+            createPortalUserJsonTransformer.createPortalUser();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-           // createKafkaTopicsJsonTransform.create();
+            createLabUsersJsonTransform.create();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            createPatientJsonTransform.create();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            createKafkaTopicsJsonTransform.create();
         } catch (Exception e) {
             e.printStackTrace();
         }

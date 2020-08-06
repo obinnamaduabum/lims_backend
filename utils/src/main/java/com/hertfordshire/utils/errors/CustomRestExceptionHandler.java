@@ -1,4 +1,4 @@
-package com.hertfordshire.access.errors;
+package com.hertfordshire.utils.errors;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

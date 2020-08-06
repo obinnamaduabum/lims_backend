@@ -1,6 +1,6 @@
 package com.hertfordshire.restfulapi.controller.roles;
 
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.dao.psql.RolesDao;
 import com.hertfordshire.model.psql.Role;
 import com.hertfordshire.pojo.RolePojo;

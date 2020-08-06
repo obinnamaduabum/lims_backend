@@ -1,6 +1,6 @@
 package com.hertfordshire.restfulapi.controller;
 
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.Utils;
 import com.hertfordshire.utils.controllers.PublicBaseApiController;

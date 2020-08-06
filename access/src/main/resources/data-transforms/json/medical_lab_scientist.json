@@ -1,0 +1,24 @@
+{
+  "portalAccount": {
+    "name": "Lab",
+    "portalAccountTypes": "LAB"
+  },
+  "portalUser": {
+    "email": "medicallabscientist@gmail.com",
+    "password": ":)Stickywordswill)901358",
+    "firstName": "medical scientist",
+    "lastName": "medical scientist",
+    "otherName": "",
+    "username": "medical scientist",
+    "signUpType": "WEB",
+    "roles": [
+      "MEDICAL_LAB_SCIENTIST"
+    ],
+    "isEmailVerified": true,
+    "isEmailOrPhoneNumberIsVerified": true,
+    "portalAccountCode": "",
+    "phoneNumber": "2348131038506",
+    "otherPhoneNumber": "",
+    "userStatus": "ACTIVE"
+  }
+}

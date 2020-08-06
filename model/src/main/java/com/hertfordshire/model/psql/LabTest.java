@@ -4,8 +4,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity()
 @Table(name = "lab_test")
@@ -25,6 +23,10 @@ public class LabTest {
     @JoinColumn(name = "labTests", nullable = false)
     private LabTestCategory labTestCategory;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "lab_test_template_id", referencedColumnName = "id")
+    private LabTestTemplate labTestTemplate;
+
     private Long priceInNaira;
 
     private Long priceInUSD;
@@ -32,13 +34,6 @@ public class LabTest {
     private Long priceInEuro;
 
     private String resultTemplateId;
-
-//    @ManyToMany(fetch = FetchType.LAZY,
-//            cascade = {
-//                    CascadeType.PERSIST,
-//                    CascadeType.MERGE
-//            }, mappedBy = "labTests")
-//    private Set<OrdersModel> ordersModels = new HashSet<>();
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
@@ -129,6 +124,14 @@ public class LabTest {
 
     public void setResultTemplateId(String resultTemplateId) {
         this.resultTemplateId = resultTemplateId;
+    }
+
+    public LabTestTemplate getLabTestTemplate() {
+        return labTestTemplate;
+    }
+
+    public void setLabTestTemplate(LabTestTemplate labTestTemplate) {
+        this.labTestTemplate = labTestTemplate;
     }
 
     //    public Set<OrdersModel> getOrdersModels() {

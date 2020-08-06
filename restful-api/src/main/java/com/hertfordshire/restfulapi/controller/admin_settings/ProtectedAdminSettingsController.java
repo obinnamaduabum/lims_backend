@@ -1,6 +1,6 @@
 package com.hertfordshire.restfulapi.controller.admin_settings;
 
-import com.hertfordshire.access.errors.ApiError;
+import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.model.psql.AdminSettings;
 import com.hertfordshire.pojo.AdminSettingsPojo;
 import com.hertfordshire.service.psql.settings.admin.AdminSettingsService;

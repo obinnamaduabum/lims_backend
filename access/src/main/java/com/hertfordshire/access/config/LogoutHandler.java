@@ -25,8 +25,8 @@ import java.security.Principal;
 @Component
 public class LogoutHandler extends SimpleUrlLogoutSuccessHandler implements LogoutSuccessHandler {
 
-//    @Autowired
-//    private com.hertfordshire.pubsub.redis.service.portal_user.PortalUserService redisPortalUserService;
+    @Autowired
+    private com.hertfordshire.pubsub.redis.service.portal_user.PortalUserService redisPortalUserService;
 
     @Autowired
     private AuthenticationTokenService authenticationTokenService;
@@ -52,7 +52,7 @@ public class LogoutHandler extends SimpleUrlLogoutSuccessHandler implements Logo
         if (principal instanceof UserDetails) {
            // System.out.println(((UserDetails) principal).getUsername());
             String formOfIdentification = ((UserDetails) principal).getUsername();
-            //this.redisPortalUserService.delete(formOfIdentification);
+            this.redisPortalUserService.delete(formOfIdentification);
         }
 
         authenticationTokenService.clearUserToken(response, request);
@@ -64,8 +64,8 @@ public class LogoutHandler extends SimpleUrlLogoutSuccessHandler implements Logo
 
         try {
             UserDetailsDto requestPrincipal = userService.getPrincipal(response, request, authentication);
-            String cookieValue = Utils.fetchCookie(request, this.fireBaseDeviceToken);
-            this.firebaseService.unsubscribeFromFCM(requestPrincipal.getId(), request, response, cookieValue);
+            String cookieValue = Utils.fetchCookie(request, fireBaseDeviceToken);
+            firebaseService.unsubscribeFromFCM(requestPrincipal.getId(), request, response, cookieValue);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }

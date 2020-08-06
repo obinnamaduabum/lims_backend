@@ -96,21 +96,6 @@ public class PatientServiceTest {
 
         portalAccountSequenceService = new PortalAccountSequenceService(jdbcTemplate);
 
-        rolesService = new RoleServiceImp(rolesDao, privilegeService, portalAccountAndPortalUserRoleMapperService);
-
-
-        portalAccountService = new PortalAccountServiceImp(portalAccountDao, rolesDao, portalAccountSequenceService);
-
-        patientService = new PatientServiceImpl(portalAccountService,
-                portalUserSequenceService,
-                portalUserDao,
-                portalAccountAndPortalUserRoleMapperService,
-                passwordEncoder,
-                portalAccountSequenceService,
-                rolesService,
-                kafkaTopicService,
-                kafkaSubscriptionService
-                );
     }
 
     @Test
@@ -143,7 +128,7 @@ public class PatientServiceTest {
                 "}", PatientDto.class);
 
 
-        PortalUser savedUser = this.patientService.create(patientDto);
+        PortalUser savedUser = this.patientService.create(patientDto, false);
 
         if(savedUser != null){
             System.out.println("gggg");

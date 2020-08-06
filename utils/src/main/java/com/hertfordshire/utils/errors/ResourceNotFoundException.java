@@ -1,4 +1,4 @@
-package com.hertfordshire.access.errors;
+package com.hertfordshire.utils.errors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

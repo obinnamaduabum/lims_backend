@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -178,7 +179,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (!TextUtils.isBlank(employeeDto.getOtherPhoneNumber())) {
             portalUser.setOtherPhoneNumber(employeeDto.getOtherPhoneNumber().trim());
         }
-        portalUser.getPortalAccounts().add(foundPortalAccount);
+
+        if(portalUser.getPortalAccounts() != null) {
+            portalUser.getPortalAccounts().add(foundPortalAccount);
+        } else {
+            HashSet<PortalAccount> portalAccountHashSet = new HashSet<>();
+            portalAccountHashSet.add(foundPortalAccount);
+            portalUser.setPortalAccounts(portalAccountHashSet);
+        }
 
         if (employeeDto.getRoles().length > 0) {
             if (employeeDto.getRoles() != null) {

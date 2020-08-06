@@ -11,11 +11,18 @@ public abstract class Transformer {
     static final String USER_ROLES_FILE_NAME = "user_roles_and_privileges.json";
     static final String ADMIN_PORTAL_USERS_FILE_NAME = "admin_portal_user.json";
     static final String ADMIN_SETTINGS_FILE_NAME = "admin_settings.json";
+    static final String PATIENT_FILE_NAME = "patient.json";
     static final String KAFKA_TOPICS = "kafka-topics.json";
     static final String PAYMENT_METHOD_CONFIG = "payment_method_config.json";
     static final String PRIVILEGES = "privileges.json";
     static final String SETTINGS_FILE_NAME = "settings.json";
     static final String PORTAL_ACCOUNT_TYPES = "portal_acccount_types.json";
+
+    static final String MEDICAL_LAB_SCIENTIST = "medical_lab_scientist.json";
+    static final String PATHOLOGIST = "pathologist.json";
+    static final String PATIENT = "patient.json";
+    static final String RECEPTIONIST = "receptionist.json";
+
     //////excels
     static final String PHONE_NUMBER_COUNTRIES_FILE_NAME = "litehauzz_countries_phone_code.xlsx";
     static final String COUNTRIES_FILE_NAME = "countries.xlsx";
