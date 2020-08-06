@@ -84,7 +84,7 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
 
         );
 
-         query = queryBuilder(query, internalSearchResponsePojo);
+         queryBuilder(query, internalSearchResponsePojo);
 
          query.setMaxResults(internalSearchResponsePojo.getPageSize());
 
@@ -206,9 +206,7 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
 
 
         InternalSearchResponsePojo internalSearchResponsePojo =
-                responseInternalLabTestResultBuilder(
-                        orderedLabTestSearchDto,
-                        null);
+        responseInternalLabTestResultBuilder(orderedLabTestSearchDto, null);
 
 
         Query query = this.entityManager.createQuery(
@@ -236,11 +234,9 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
 
         );
 
-        query = queryBuilder(query, internalSearchResponsePojo);
-
+        queryBuilder(query, internalSearchResponsePojo);
 
         this.entityManager.close();
-
         //logger.info(this.gson.toJson(query.getResultList().size()));
 
         int count = ((Number) query.getSingleResult()).intValue();
@@ -248,7 +244,7 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
     }
 
 
-    private Query queryBuilder(Query query, InternalSearchResponsePojo internalSearchResponsePojo) {
+    private void queryBuilder(Query query, InternalSearchResponsePojo internalSearchResponsePojo) {
 
         if (StringUtils.isNotBlank(internalSearchResponsePojo.getEmail())) {
             query.setParameter("email", "%" + internalSearchResponsePojo.getEmail() + "%");
@@ -274,8 +270,6 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
 
         query.setParameter("startDate", internalSearchResponsePojo.getStartDate());
         query.setParameter("endDate", internalSearchResponsePojo.getEndDate());
-
-        return query;
     }
 
 

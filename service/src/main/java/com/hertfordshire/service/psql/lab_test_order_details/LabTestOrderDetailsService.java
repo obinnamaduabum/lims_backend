@@ -19,10 +19,13 @@ public interface LabTestOrderDetailsService {
     List<LabTestOrderDetail> findByOrdersModel(OrdersModel ordersModel);
 
     @Transactional
-    SampleCollectedModel updateSampleCollectionStatus(PortalUser portalUser, LabTestOrderDetail labTestOrderDetail);
+    SampleCollectedModel updateSampleCollectionStatus(PortalUser portalUser,
+                                                      LabTestOrderDetail labTestOrderDetail,
+                                                      SampleCollectedModel sampleCollectedModel);
 
     @Transactional
-    boolean updateSampleCollectionDbWithDataOnceCashIsCollected(PortalUser portalUser, OrdersModel ordersModel);
+    boolean updateSampleCollectionDbWithDataOnceCashIsCollected(PortalUser portalUser,
+                                                                OrdersModel ordersModel);
 
     SampleCollectedModel findSampleCollectionStatusByPortalUserAndLabTestOrderDetail(PortalUser portalUser, LabTestOrderDetail labTestOrderDetail);
 

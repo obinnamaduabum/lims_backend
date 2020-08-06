@@ -394,7 +394,10 @@ public class ProtectedTestOrdersController extends ProtectedBaseApiController {
                 String formOfIdentification = userService.fetchFormOfIdentification();
                 if (!TextUtils.isBlank(formOfIdentification)) {
                     PortalUserModel portalUserModel = this.redisPortalUserService.fetchPortalUser(formOfIdentification);
-                    portalUserId = portalUserModel.getId();
+
+                    if(portalUserModel != null){
+                        portalUserId = portalUserModel.getId();
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -409,7 +412,7 @@ public class ProtectedTestOrdersController extends ProtectedBaseApiController {
 
             } catch (NullPointerException e) {
                 e.printStackTrace();
-                return new MyApiResponse().unAuthorizedResponse();
+                return myApiResponse.unAuthorizedResponse();
             }
 
 
@@ -441,7 +444,6 @@ public class ProtectedTestOrdersController extends ProtectedBaseApiController {
                 }
 
                 return sampleModelService.sample(ordersModel, labTest, labTestSampleDto, portalUser, apiError, lang);
-
 
             } catch (Exception e) {
 

@@ -90,8 +90,14 @@ public class LabTestOrderDetailsServiceImpl implements LabTestOrderDetailsServic
 
     @Transactional
     @Override
-    public SampleCollectedModel updateSampleCollectionStatus(PortalUser portalUser, LabTestOrderDetail labTestOrderDetail) {
-        SampleCollectedModel sampleCollectedModel = new SampleCollectedModel();
+    public SampleCollectedModel updateSampleCollectionStatus(PortalUser portalUser,
+                                                             LabTestOrderDetail labTestOrderDetail,
+                                                             SampleCollectedModel sampleCollectedModel) {
+
+
+        if(sampleCollectedModel == null){
+           sampleCollectedModel = new SampleCollectedModel();
+        }
         sampleCollectedModel.setCollectedBy(portalUser);
         sampleCollectedModel.setSampleCollected(SampleTypeConstant.SAMPLE_COLLECTED);
         SampleCollectedModel newlyCreatedSampleCollection =
@@ -100,11 +106,8 @@ public class LabTestOrderDetailsServiceImpl implements LabTestOrderDetailsServic
         labTestOrderDetail.setSampleCollected(newlyCreatedSampleCollection);
         this.labTestOrderDetailDao.save(labTestOrderDetail);
 
-
         LabScientistTestResultModel labScientistTestResultModel =
-                returnLabScientistTestResultModel(newlyCreatedSampleCollection);
-
-
+        returnLabScientistTestResultModel(newlyCreatedSampleCollection);
 
         Optional<LabTest> optionalLabTest = this.labTestDao.findById(labTestOrderDetail.getLabTest().getId());
         optionalLabTest.ifPresent(labScientistTestResultModel::setLabTest);
@@ -158,10 +161,11 @@ public class LabTestOrderDetailsServiceImpl implements LabTestOrderDetailsServic
     public SampleCollectedModel findSampleCollectionStatusByPortalUserAndLabTestOrderDetail(PortalUser portalUser, LabTestOrderDetail labTestOrderDetail) {
 
         if (labTestOrderDetail.getSampleCollected() != null) {
-            Long sampleCollectedId = labTestOrderDetail.getSampleCollected().getId();
-            if (sampleCollectedId != 0L) {
+
+            if (labTestOrderDetail.getSampleCollected() != null) {
+                Long sampleCollectedId = labTestOrderDetail.getSampleCollected().getId();
                 Optional<SampleCollectedModel> optionalSampleCollectedModel =
-                        this.sampleCollectedDao.findById(labTestOrderDetail.getSampleCollected().getId());
+                this.sampleCollectedDao.findById(sampleCollectedId);
                 return optionalSampleCollectedModel.orElse(null);
             } else {
                 return null;

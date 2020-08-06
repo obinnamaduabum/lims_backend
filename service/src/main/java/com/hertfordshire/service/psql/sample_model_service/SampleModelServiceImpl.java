@@ -76,14 +76,15 @@ public class SampleModelServiceImpl implements SampleModelService {
 //                            logger.info("test not found");
 //                        }
 
-                sampleCollectedModel = this.labTestOrderDetailsService.updateSampleCollectionStatus(portalUser, labTestOrderDetail);
+               sampleCollectedModel = this.labTestOrderDetailsService.updateSampleCollectionStatus(portalUser,
+                       labTestOrderDetail,
+                       sampleCollectedModel);
 
                 PortalUser collectedBy = portalUser;
 
                 if (collectedBy != null) {
 
                     SampleAndPortalUserPojo sampleAndPortalUserPojo = setup(collectedBy, sampleCollectedModel);
-
 
 //                            String url = "";
 //                            if (portalAccount.getPortalAccountType().equals(PortalAccountTypeConstant.PATIENT)) {
@@ -110,11 +111,9 @@ public class SampleModelServiceImpl implements SampleModelService {
 //
 //                            //this.pushNotificationService.sendPushNotificationToTopic(topics.stream().findFirst().orElse(""), title, message, url);
 //                            //  publish message to firebase
-
                     apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("sample.collection.status", lang),
                             true, new ArrayList<>(), sampleAndPortalUserPojo);
-                }
-                else {
+                } else {
                     apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("sample.collection.status.failed", lang),
                             false, new ArrayList<>(), null);
                 }
@@ -127,7 +126,6 @@ public class SampleModelServiceImpl implements SampleModelService {
                         false, new ArrayList<>(), null);
             }
 
-
             return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
         }
     }
@@ -137,7 +135,7 @@ public class SampleModelServiceImpl implements SampleModelService {
 
         ApiError apiError = null;
 
-        SampleCollectedModel sampleCollectedModel = this.labTestOrderDetailsService.updateSampleCollectionStatus(portalUser, labTestOrderDetail);
+        SampleCollectedModel sampleCollectedModel = this.labTestOrderDetailsService.updateSampleCollectionStatus(portalUser, labTestOrderDetail, null);
 
         PortalUser collectedBy = this.portalUserService.findById(sampleCollectedModel.getCollectedBy().getId());
 
@@ -177,6 +175,7 @@ public class SampleModelServiceImpl implements SampleModelService {
 
 
     SampleAndPortalUserPojo setup(PortalUser collectedBy, SampleCollectedModel sampleCollectedModel) {
+
         PortalUserPojo portalUserPojo = new PortalUserPojo();
         portalUserPojo.setPhoneNumber(collectedBy.getPhoneNumber());
         portalUserPojo.setFirstName(collectedBy.getFirstName());

@@ -9,6 +9,7 @@ import com.hertfordshire.service.psql.portaluser.PortalUserService;
 import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.PhoneNumberValidationUtil;
 import com.hertfordshire.utils.controllers.PublicBaseApiController;
+import com.hertfordshire.utils.errors.MyApiResponse;
 import com.hertfordshire.utils.pojo.ProperPhoneNumberPojo;
 import dev.samstevens.totp.code.HashingAlgorithm;
 import dev.samstevens.totp.qr.QrData;
@@ -59,6 +60,9 @@ public class PublicPatientController extends PublicBaseApiController {
     @Autowired
     private MessageUtil messageUtil;
 
+    @Autowired
+    private MyApiResponse myApiResponse;
+
     @ApiOperation("Create patient")
     @PostMapping("/default/patient/create")
     public ResponseEntity<Object> create(@Valid @RequestBody PatientDto patientDto,
@@ -77,7 +81,7 @@ public class PublicPatientController extends PublicBaseApiController {
 
         } else {
 
-            if(!TextUtils.isBlank(patientDto.getEmail())) {
+            if (!TextUtils.isBlank(patientDto.getEmail())) {
                 portalUser = portalUserService.findByEmail(patientDto.getEmail().trim());
 
                 if (portalUser != null) {
@@ -135,9 +139,8 @@ public class PublicPatientController extends PublicBaseApiController {
                 portalUser = patientService.create(patientDto, false);
 
 
-
                 String dataUri = null;
-                if(portalUser.isTwoFactor()) {
+                if (portalUser.isTwoFactor()) {
                     QrData data = new QrData.Builder()
                             .label("info@hertfordshire.dev")
                             .secret(portalUser.getSecret())
@@ -155,17 +158,16 @@ public class PublicPatientController extends PublicBaseApiController {
                 }
 
 
-
                 apiError = new ApiError(HttpStatus.CREATED.value(), HttpStatus.CREATED, messageUtil.getMessage("patient.creation.successful", "en"),
                         true, new ArrayList<>(), dataUri);
 
+                return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+
             } catch (Exception e) {
                 e.printStackTrace();
-
-                apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, messageUtil.getMessage("patient.creation.not.successful", "en"),
-                        false, new ArrayList<>(), portalUser);
+                return this.myApiResponse.internalServerErrorResponse();
             }
-            return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+
         }
     }
 }
