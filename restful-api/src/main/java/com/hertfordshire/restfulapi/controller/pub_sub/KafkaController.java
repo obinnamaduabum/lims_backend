@@ -28,6 +28,7 @@ import com.hertfordshire.service.psql.kafka.topic.KafkaTopicService;
 import com.hertfordshire.service.psql.portaluser.PortalUserService;
 import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.controllers.ProtectedBaseApiController;
+import com.hertfordshire.utils.errors.MyApiResponse;
 import org.apache.http.util.TextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +93,10 @@ public class KafkaController extends ProtectedBaseApiController {
     @Autowired
     private FirebaseDeviceService firebaseDeviceService;
 
+
+    @Autowired
+    private MyApiResponse myApiResponse;
+
     @GetMapping(value = "/default/shila/topic")
     public ResponseEntity<Object> allTopic(HttpServletResponse response,
                                            HttpServletRequest request,
@@ -153,9 +158,7 @@ public class KafkaController extends ProtectedBaseApiController {
                     } catch (NullPointerException e) {
                         e.printStackTrace();
 
-                        apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED, messageUtil.getMessage("user.unauthorized", "en"),
-                                false, new ArrayList<>(), null);
-                        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+                        return this.myApiResponse.unAuthorizedResponse();
                     }
                 }
             }
@@ -312,10 +315,14 @@ public class KafkaController extends ProtectedBaseApiController {
 
             try {
                 notificationMongoDbList =
-                        this.notificationMongodbService.findAllByPortalUserOrderByDateCreated(portalUser);
+                this.notificationMongodbService.findAllByPortalUserOrderByDateCreated(portalUser);
+
                 NotificationCountMongoDb notificationCountMongoDb =
-                        this.notificationCountMongoDbService.findByPortalUserId(portalUser.getId());
-                count = notificationCountMongoDb.getCount();
+                this.notificationCountMongoDbService.findByPortalUserId(portalUser.getId());
+
+                if(notificationCountMongoDb != null) {
+                    count = notificationCountMongoDb.getCount();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

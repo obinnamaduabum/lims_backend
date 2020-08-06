@@ -37,7 +37,7 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
     @PersistenceContext
     private EntityManager entityManager;
 
-    private String dateSource = "2000-09-09";
+    String dateSource = "2000-09-09";
 
     public LabScientistResultServiceImpl() {
         this.gson = new Gson();
@@ -49,62 +49,10 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
 
         this.logger.info(this.gson.toJson(orderedLabTestSearchDto));
 
-        String email = null;
-        String fullName = null;
-        String phoneNumber = null;
-        String orderId = null;
-        String code = null;
-        Date startDate;
-        Date endDate;
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getEmail())) {
-            email = orderedLabTestSearchDto.getEmail().toLowerCase().trim();
-        }
-
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getFullName())) {
-            fullName = orderedLabTestSearchDto.getFullName().toLowerCase().trim();
-        }
-
-
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getOrderId())) {
-            orderId = orderedLabTestSearchDto.getOrderId().toLowerCase().trim();
-        }
-
-
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getCode())) {
-            code = orderedLabTestSearchDto.getCode().toLowerCase().trim();
-        }
-
-
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getPhoneNumber())) {
-            phoneNumber = orderedLabTestSearchDto.getPhoneNumber().trim();
-        }
-
-        if (orderedLabTestSearchDto.getStartDate() != null) {
-            startDate = Utils.atStartOfDay(orderedLabTestSearchDto.getStartDate());
-        } else {
-
-            String pattern = "yyyy-MM-dd";
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-
-            Date date = null;
-            try {
-                date = simpleDateFormat.parse(dateSource);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            startDate = Utils.atStartOfDay(date);
-        }
-
-        if (orderedLabTestSearchDto.getEndDate() != null) {
-            endDate = Utils.atEndOfDay(orderedLabTestSearchDto.getEndDate());
-        } else {
-            Date date = new Date();
-            endDate = Utils.atEndOfDay(date);
-        }
-
-
-        int pageNumber = pageable.getPageNumber();
-        int pageSize = pageable.getPageSize();
+        InternalSearchResponsePojo internalSearchResponsePojo =
+                responseInternalLabTestResultBuilder(
+                        orderedLabTestSearchDto,
+                        pageable);
 
         Query query = this.entityManager.createQuery(
                 "select distinct "
@@ -112,16 +60,12 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
                         + "p, "
                         + "s, "
                         + "o,"
-                        + "pui"
-                        + ", "
                         + "ls"
                         + " from LabScientistTestResultModel as ls"
                         + " LEFT JOIN SampleCollectedModel as s ON s.id = ls.sampleCollectedModel.id"
                         + " LEFT JOIN LabTestOrderDetail la ON la.id = s.labTestOrderDetail.id"
                         + " LEFT JOIN OrdersModel o ON o.id = la.ordersModel.id"
                         + " LEFT JOIN PortalUser p ON ((p.id = la.patient.id) or p.id is null)"
-                        + " LEFT JOIN PortalUserInstitutionLabTestOrderDetail pui"
-                        + " ON ((pui.id = la.portalUserInstitutionLabTestOrderDetail.id) or pui.id is null)"
 
                         + " where o.cashCollected = true"
                         + " and (:orderId is null or lower(o.code) = :orderId)"
@@ -135,47 +79,18 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
                         +" and (:fullName is null or lower(p.firstName) like :fullName)"
                         +" or (:fullName is null or lower(p.lastName) like :fullName)"
                         +" or (:fullName is null or lower(p.otherName) like :fullName)"
-                        +")"
-
-                        //// pui
-                        + " or ((:phoneNumber is null or lower(pui.phoneNumber) like :phoneNumber)"
-                        + " and ((:fullName is null or lower(pui.firstName) like :fullName)" +
-                        " or (:fullName is null or lower(pui.lastName) like :fullName)"
-                        + " or (:fullName is null or lower(pui.otherName) like :fullName))"
                         +"))"
+
                         + " and s.dateUpdated between :startDate and :endDate order by s.dateUpdated desc");
 
 
 
-        query.setFirstResult((pageNumber) * pageSize);
-        if (StringUtils.isNotBlank(email)) {
-            query.setParameter("email", "%" + email + "%");
-        } else {
-            query.setParameter("email", email);
-        }
 
-        query.setParameter("orderId", orderId);
+        queryBuilder(query, internalSearchResponsePojo);
 
-        query.setParameter("code", code);
+        query.setMaxResults(internalSearchResponsePojo.getPageSize());
 
-        if (StringUtils.isNotBlank(fullName)) {
-            query.setParameter("fullName", "%" + fullName + "%");
-        } else {
-            query.setParameter("fullName", fullName);
-        }
-
-        if (!TextUtils.isBlank(phoneNumber)) {
-            query.setParameter("phoneNumber", "%" + phoneNumber + "%");
-        } else {
-            query.setParameter("phoneNumber", phoneNumber);
-        }
-
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
-        query.setMaxResults(pageSize);
         this.entityManager.close();
-
-
 
         List<Object[]> rows = query.getResultList();
 
@@ -187,10 +102,10 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
             LabTestInfoForMedicalLabScientistPojo labTestsOrderedPojo = new LabTestInfoForMedicalLabScientistPojo();
 //            query.getResultList() portalUserResponsePojo = new PortalUserResponsePojo();
 //
-            if (pageNumber == 0) {
+            if (internalSearchResponsePojo.getPageNumber() == 0) {
                 labTestsOrderedPojo.setPosition((long) (i + 1));
             } else {
-                labTestsOrderedPojo.setPosition((long) (i + pageSize + pageNumber));
+                labTestsOrderedPojo.setPosition((long) (i + internalSearchResponsePojo.getPageSize() + internalSearchResponsePojo.getPageNumber()));
             }
 
             LabTestPojo labTestPojo = new LabTestPojo();
@@ -290,11 +205,11 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
         }
 
         paginationResponsePojo.setDataList(orderedPojos);
-        paginationResponsePojo.setPageNumber((long) pageNumber);
-        paginationResponsePojo.setPageSize((long) pageSize);
+        paginationResponsePojo.setPageNumber((long) internalSearchResponsePojo.getPageNumber());
+        paginationResponsePojo.setPageSize((long) internalSearchResponsePojo.getPageSize());
         paginationResponsePojo.setLength(this.countByLabScientistResultWithPagination(orderedLabTestSearchDto));
 
-        //logger.info(this.gson.toJson(paginationResponsePojo));
+        logger.info(this.gson.toJson(paginationResponsePojo));
         return paginationResponsePojo;
     }
 
@@ -302,6 +217,82 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
     @Override
     public Long countByLabScientistResultWithPagination(OrderedLabTestSearchDto orderedLabTestSearchDto) {
 
+
+        InternalSearchResponsePojo internalSearchResponsePojo =
+                responseInternalLabTestResultBuilder(
+                        orderedLabTestSearchDto,
+                        null);
+
+
+        Query query = this.entityManager.createQuery(
+                "select distinct count(ls)"
+                        + " from LabScientistTestResultModel as ls"
+                        + " LEFT JOIN SampleCollectedModel as s ON s.id = ls.sampleCollectedModel.id"
+                        + " LEFT JOIN LabTestOrderDetail la ON la.id = s.labTestOrderDetail.id"
+                        + " LEFT JOIN OrdersModel o ON o.id = la.ordersModel.id"
+                        + " LEFT JOIN PortalUser p ON ((p.id = la.patient.id) or p.id is null)"
+
+
+                        + " where o.cashCollected = true"
+                        + " and (:orderId is null or lower(o.code) = :orderId)"
+
+                        + " and (:code is null or lower(la.uniqueId) = :code)"
+
+                        //p
+                        + " and (:email is null or lower(p.email) like :email)"
+                        + " and (("
+                        + "(:phoneNumber is null or lower(p.phoneNumber) like :phoneNumber)"
+                        + " and (:fullName is null or lower(p.firstName) like :fullName)"
+                        + " or (:fullName is null or lower(p.lastName) like :fullName)"
+                        + " or (:fullName is null or lower(p.otherName) like :fullName)"
+                        + "))"
+                        + " and s.dateUpdated between :startDate and :endDate");
+
+        queryBuilder(query, internalSearchResponsePojo);
+
+
+        this.entityManager.close();
+
+        //logger.info(this.gson.toJson(query.getResultList().size()));
+
+        int count = ((Number) query.getSingleResult()).intValue();
+        return (long) count;
+    }
+
+
+    private void queryBuilder(Query query, InternalSearchResponsePojo internalSearchResponsePojo) {
+
+        if (StringUtils.isNotBlank(internalSearchResponsePojo.getEmail())) {
+            query.setParameter("email", "%" + internalSearchResponsePojo.getEmail() + "%");
+        } else {
+            query.setParameter("email", internalSearchResponsePojo.getEmail());
+        }
+
+        query.setParameter("orderId", internalSearchResponsePojo.getOrderId());
+
+        query.setParameter("code", internalSearchResponsePojo.getCode());
+
+        if (StringUtils.isNotBlank(internalSearchResponsePojo.getFullName())) {
+            query.setParameter("fullName", "%" + internalSearchResponsePojo.getFullName() + "%");
+        } else {
+            query.setParameter("fullName", internalSearchResponsePojo.getFullName());
+        }
+
+        if (!TextUtils.isBlank(internalSearchResponsePojo.getPhoneNumber())) {
+            query.setParameter("phoneNumber", "%" + internalSearchResponsePojo.getPhoneNumber() + "%");
+        } else {
+            query.setParameter("phoneNumber", internalSearchResponsePojo.getPhoneNumber());
+        }
+
+        query.setParameter("startDate", internalSearchResponsePojo.getStartDate());
+        query.setParameter("endDate", internalSearchResponsePojo.getEndDate());
+
+    }
+
+
+    private InternalSearchResponsePojo responseInternalLabTestResultBuilder(
+            OrderedLabTestSearchDto orderedLabTestSearchDto,
+            Pageable pageable) {
         String email = null;
         String fullName = null;
         String phoneNumber = null;
@@ -356,69 +347,28 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
             endDate = Utils.atEndOfDay(date);
         }
 
-        Query query = this.entityManager.createQuery(
-                "select distinct count(ls)"
-                        + " from LabScientistTestResultModel as ls"
-                        + " LEFT JOIN SampleCollectedModel as s ON s.id = ls.sampleCollectedModel.id"
-                        + " LEFT JOIN LabTestOrderDetail la ON la.id = s.labTestOrderDetail.id"
-                        + " LEFT JOIN OrdersModel o ON o.id = la.ordersModel.id"
-                        + " LEFT JOIN PortalUser p ON ((p.id = la.patient.id) or p.id is null)"
-                        + " LEFT JOIN PortalUserInstitutionLabTestOrderDetail pui"
-                        + " ON ((pui.id = la.portalUserInstitutionLabTestOrderDetail.id) or pui.id is null)"
 
-                        + " where o.cashCollected = true"
-                        + " and (:orderId is null or lower(o.code) = :orderId)"
-
-                        + " and (:code is null or lower(la.uniqueId) = :code)"
-
-                        //p
-                        + " and (:email is null or lower(p.email) like :email)"
-                        + " and (("
-                        + "(:phoneNumber is null or lower(p.phoneNumber) like :phoneNumber)"
-                        + " and (:fullName is null or lower(p.firstName) like :fullName)"
-                        + " or (:fullName is null or lower(p.lastName) like :fullName)"
-                        + " or (:fullName is null or lower(p.otherName) like :fullName)"
-                        + ")"
-
-                        //// pui
-                        + " or ((:phoneNumber is null or lower(pui.phoneNumber) like :phoneNumber)"
-                        + " and ((:fullName is null or lower(pui.firstName) like :fullName)" +
-                        " or (:fullName is null or lower(pui.lastName) like :fullName)"
-                        + " or (:fullName is null or lower(pui.otherName) like :fullName))"
-                        + "))"
-                        + " and s.dateUpdated between :startDate and :endDate");
-
-
-        if (StringUtils.isNotBlank(email)) {
-            query.setParameter("email", "%" + email + "%");
-        } else {
-            query.setParameter("email", email);
+        int pageNumber = 0;
+        int pageSize = 10;
+        if(pageable != null) {
+            pageNumber = pageable.getPageNumber();
+            pageSize = pageable.getPageSize();
         }
 
-        query.setParameter("orderId", orderId);
 
-        query.setParameter("code", code);
+        InternalSearchResponsePojo internalSearchResponsePojo = new InternalSearchResponsePojo();
+        internalSearchResponsePojo.setEmail(email);
+        internalSearchResponsePojo.setStartDate(startDate);
+        internalSearchResponsePojo.setEndDate(endDate);
+        internalSearchResponsePojo.setCode(code);
+        internalSearchResponsePojo.setPageSize(pageSize);
+        internalSearchResponsePojo.setPageNumber(pageNumber);
+        internalSearchResponsePojo.setFullName(fullName);
+        internalSearchResponsePojo.setSampleCollectedStatus(sampleCollectedStatus);
+        internalSearchResponsePojo.setPhoneNumber(phoneNumber);
+        internalSearchResponsePojo.setOrderId(orderId);
 
-        if (StringUtils.isNotBlank(fullName)) {
-            query.setParameter("fullName", "%" + fullName + "%");
-        } else {
-            query.setParameter("fullName", fullName);
-        }
-
-        if (!TextUtils.isBlank(phoneNumber)) {
-            query.setParameter("phoneNumber", "%" + phoneNumber + "%");
-        } else {
-            query.setParameter("phoneNumber", phoneNumber);
-        }
-
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
-        this.entityManager.close();
-
-        //logger.info(this.gson.toJson(query.getResultList().size()));
-
-        int count = ((Number) query.getSingleResult()).intValue();
-        return (long) count;
+        return internalSearchResponsePojo;
     }
 
 }

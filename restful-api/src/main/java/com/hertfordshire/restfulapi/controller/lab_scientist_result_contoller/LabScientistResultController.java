@@ -1,10 +1,13 @@
 package com.hertfordshire.restfulapi.controller.lab_scientist_result_contoller;
 
+import com.google.gson.Gson;
+import com.hertfordshire.service.psql.lab_scientist_result.LabScientistResultService;
 import com.hertfordshire.utils.errors.ApiError;
 import com.hertfordshire.dto.OrderedLabTestSearchDto;
 import com.hertfordshire.pojo.PaginationResponsePojo;
 import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.controllers.ProtectedBaseApiController;
+import com.hertfordshire.utils.errors.MyApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,20 +26,20 @@ public class LabScientistResultController extends ProtectedBaseApiController {
 
     private static final Logger logger = LoggerFactory.getLogger(LabScientistResultController.class.getSimpleName());
 
-//    @Autowired
-//    private LabScientistResultService labScientistResultService;
-//
-//    @Autowired
-//    private LabTestResultMongoDbService labTestResultMongoDbService;
-//
-//    @Autowired
-//    private LabTestTemplateMongoDbService labTestTemplateMongoDbService;
+    @Autowired
+    private LabScientistResultService labScientistResultService;
+
 
     @Autowired
     private MessageUtil messageUtil;
 
-    public LabScientistResultController() {
+    @Autowired
+    private MyApiResponse apiResponse;
 
+    private Gson gson;
+
+    public LabScientistResultController() {
+        this.gson = new Gson();
     }
 
 
@@ -44,25 +47,18 @@ public class LabScientistResultController extends ProtectedBaseApiController {
     public ResponseEntity<Object> index(@RequestBody OrderedLabTestSearchDto orderedLabTestSearchDto,
                                         @RequestParam("page") int page,
                                         @RequestParam("size") int size) {
-        ApiError apiError = null;
 
-            try {
+        try {
 
-                Pageable sortedByDateCreated = PageRequest.of(page, size, Sort.by("date_created").descending());
+            Pageable sortedByDateCreated = PageRequest.of(page, size, Sort.by("date_created").descending());
+            PaginationResponsePojo paginationResponsePojo = this.labScientistResultService.findByLabScientistResultWithPagination(orderedLabTestSearchDto, sortedByDateCreated);
+            logger.info(this.gson.toJson(paginationResponsePojo));
+            return this.apiResponse.successful(paginationResponsePojo, "template.assigned.to.lab.test");
 
-                PaginationResponsePojo paginationResponsePojo = null;
-                        // = this.labScientistResultService.findByLabScientistResultWithPagination(orderedLabTestSearchDto, sortedByDateCreated);
-
-                apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("template.assigned.to.lab.test", "en"), true, new ArrayList<>(), paginationResponsePojo);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("server.error", "en"), false, new ArrayList<>(), null);
-
-            }
-
-        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return this.apiResponse.internalServerErrorResponse();
+        }
     }
 
 

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.hertfordshire.dao.psql.LabTestDao;
 import com.hertfordshire.dao.psql.LabTestTemplateDao;
 import com.hertfordshire.dto.LabTestTemplateCreateDto;
+import com.hertfordshire.dto.LabTestTemplateEditDto;
 import com.hertfordshire.model.psql.*;
 import com.hertfordshire.pojo.*;
 import com.hertfordshire.service.sequence.lab_test_template_code.LabTestTemplateSequenceImpl;
@@ -57,6 +58,14 @@ public class LabTestTemplateServiceImpl implements LabTestTemplateService {
         labTestTemplate.setName(labTestTemplateCreateDto.getTitle());
         labTestTemplate.setCreatedBy(portalUser);
 
+        return this.labTestTemplateDao.save(labTestTemplate);
+    }
+
+    @Override
+    public LabTestTemplate edit(LabTestTemplate labTestTemplate, LabTestTemplateEditDto labTestTemplateEditDto) {
+
+        labTestTemplate.setName(labTestTemplateEditDto.getTitle());
+        labTestTemplate.setContent(labTestTemplateEditDto.getData());
         return this.labTestTemplateDao.save(labTestTemplate);
     }
 
@@ -173,5 +182,31 @@ public class LabTestTemplateServiceImpl implements LabTestTemplateService {
         this.labTestDao.save(labTest);
         return storedLabTestTemplate;
 
+    }
+
+    @Override
+    public LabTestTemplatePojo removeAssignment(LabTestTemplate labTestTemplate) {
+
+        try {
+
+            LabTest labTest = labTestTemplate.getLabTest();
+            labTest.setLabTestTemplate(null);
+            this.labTestDao.save(labTest);
+
+            labTestTemplate.setLabTest(null);
+            labTestTemplate = labTestTemplateDao.save(labTestTemplate);
+
+            LabTestTemplatePojo labTestTemplatePojo = new LabTestTemplatePojo();
+            labTestTemplatePojo.setAssigned(labTestTemplate.getLabTest() != null);
+            labTestTemplatePojo.setCode(labTestTemplate.getCode());
+            labTestTemplatePojo.setData(labTestTemplate.getContent());
+            labTestTemplatePojo.setLabTestCategory(null);
+            labTestTemplatePojo.setLabTestName(null);
+
+            return labTestTemplatePojo;
+
+        } catch (Exception e) {
+            return  null;
+        }
     }
 }

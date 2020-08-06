@@ -630,6 +630,8 @@ public class ProtectedTestOrdersController extends ProtectedBaseApiController {
 
             PaginationResponsePojo paginationResponsePojo = this.labTestOrderDetailsService.findAllByLabTestsOrdered(orderedLabTestSearchDto, sortedByDateCreated);
 
+            logger.info(this.gson.toJson(paginationResponsePojo));
+
             Long total = this.labTestOrderDetailsService.countAllByLabTestOrdered(orderedLabTestSearchDto);
 
             paginationResponsePojo.setLength(total);

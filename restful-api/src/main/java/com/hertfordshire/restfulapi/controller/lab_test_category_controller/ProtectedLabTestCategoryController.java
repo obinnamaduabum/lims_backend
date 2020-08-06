@@ -67,6 +67,10 @@ public class ProtectedLabTestCategoryController extends ProtectedBaseApiControll
     @Autowired
     private LabTestTemplateService labTestTemplateService;
 
+
+    @Autowired
+    private MyApiResponse myApiResponse;
+
 //    @Autowired
 //    private LabTestTemplateAssignmentHistoryMongoDbService labTestTemplateAssignmentHistoryMongoDbService;
 
@@ -201,7 +205,7 @@ public class ProtectedLabTestCategoryController extends ProtectedBaseApiControll
             } catch (Exception e) {
                 e.printStackTrace();
 
-                return new MyApiResponse().internalServerErrorResponse();
+                return myApiResponse.internalServerErrorResponse();
             }
         }
 
@@ -224,7 +228,7 @@ public class ProtectedLabTestCategoryController extends ProtectedBaseApiControll
             return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
         } catch (Exception e) {
             e.printStackTrace();
-            return new MyApiResponse().internalServerErrorResponse();
+            return myApiResponse.internalServerErrorResponse();
         }
 
     }
@@ -234,7 +238,6 @@ public class ProtectedLabTestCategoryController extends ProtectedBaseApiControll
 
         ApiError apiError = null;
         try {
-
 
             List<LabTestTemplateAssignmentHistoryMongoDb> labTestTemplateAssignmentHistoryMongoDbs = null;
                     // = this.labTestTemplateAssignmentHistoryMongoDbService.findByLabTestTemplateIdOOrderByDateCreatedDesc(id);
@@ -246,13 +249,7 @@ public class ProtectedLabTestCategoryController extends ProtectedBaseApiControll
         } catch (Exception e) {
             e.printStackTrace();
 
-            return new MyApiResponse().internalServerErrorResponse();
+            return myApiResponse.internalServerErrorResponse();
         }
-
-
     }
-
-
-
-
 }

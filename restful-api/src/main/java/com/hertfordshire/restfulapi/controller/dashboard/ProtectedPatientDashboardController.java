@@ -110,6 +110,5 @@ public class ProtectedPatientDashboardController extends ProtectedBaseApiControl
             e.printStackTrace();
             return myApiResponse.internalServerErrorResponse();
         }
-
     }
 }

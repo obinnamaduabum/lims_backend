@@ -44,7 +44,6 @@ public class SampleCollectedModel {
     @Column(name = "date_updated")
     private Date dateUpdated = new Date();
 
-
     public Long getId() {
         return id;
     }

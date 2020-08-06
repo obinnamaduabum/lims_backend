@@ -59,6 +59,9 @@ public class ProtectedLabTestTemplateController extends ProtectedBaseApiControll
     @Autowired
     private LabTestService labTestService;
 
+    @Autowired
+    private MyApiResponse myApiResponse;
+
     @GetMapping("/default/lab_test_template")
     public ResponseEntity<Object> index(@RequestParam("page") int page,
                                         @RequestParam("size") int size) {
@@ -71,7 +74,7 @@ public class ProtectedLabTestTemplateController extends ProtectedBaseApiControll
                 size = 10;
             }
 
-            Pageable sortedByDateCreated = PageRequest.of(page, size, Sort.by("name").descending());
+            Pageable sortedByDateCreated = PageRequest.of(page, size, Sort.by("dateCreated").descending());
 
             PaginationResponsePojo paginationResponsePojo = this.labTestTemplateService.findAll(sortedByDateCreated);
 
@@ -95,8 +98,6 @@ public class ProtectedLabTestTemplateController extends ProtectedBaseApiControll
                                          Authentication authentication) {
 
         ApiError apiError = null;
-        PortalUser portalUser = null;
-        PortalAccount portalAccount = null;
         UserDetailsDto requestPrincipal = null;
 
         if (bindingResult.hasErrors()) {
@@ -150,22 +151,22 @@ public class ProtectedLabTestTemplateController extends ProtectedBaseApiControll
 
         try {
 
-            LabTestTemplateMongoDb labTestTemplateMongoDb = null;
-                    // = this.labTestTemplateMongoDbService.findByCode(code.toLowerCase());
+            LabTestTemplate labTestTemplate = this.labTestTemplateService.findByCode(code.toLowerCase());
 
-            if (labTestTemplateMongoDb != null) {
+            if (labTestTemplate != null) {
                 apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("lab.test.template.found", "en"),
-                        true, new ArrayList<>(), labTestTemplateMongoDb);
+                        true, new ArrayList<>(), labTestTemplate);
             } else {
                 apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("lab.test.template.notfound", "en"),
                         false, new ArrayList<>(), null);
             }
 
+            return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+
         } catch (Exception e) {
             e.printStackTrace();
-            return new MyApiResponse().internalServerErrorResponse();
+            return myApiResponse.internalServerErrorResponse();
         }
-        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
 
@@ -186,15 +187,13 @@ public class ProtectedLabTestTemplateController extends ProtectedBaseApiControll
 
         try {
 
-            LabTestTemplateMongoDb labTestTemplateMongoDb = null;
-            // = this.labTestTemplateMongoDbService.findByCode(labTestTemplateEditDto.getCode());
+            LabTestTemplate labTestTemplate = this.labTestTemplateService.findByCode(labTestTemplateEditDto.getCode());
 
-            if (labTestTemplateMongoDb != null) {
+            if (labTestTemplate != null) {
 
-                LabTestTemplateMongoDb updatedLabTestTemplateMongoDb = null;
-                // = this.labTestTemplateMongoDbService.edit(labTestTemplateMongoDb, labTestTemplateEditDto);
+                LabTestTemplate updatedLabTestTemplate = this.labTestTemplateService.edit(labTestTemplate, labTestTemplateEditDto);
 
-                if (updatedLabTestTemplateMongoDb != null) {
+                if (updatedLabTestTemplate != null) {
                     apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("lab.test.template.updated", "en"),
                             true, new ArrayList<>(), null);
                 } else {
@@ -209,7 +208,7 @@ public class ProtectedLabTestTemplateController extends ProtectedBaseApiControll
             return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
         } catch (Exception e) {
             e.printStackTrace();
-            return new MyApiResponse().internalServerErrorResponse();
+            return myApiResponse.internalServerErrorResponse();
         }
 
     }
@@ -221,10 +220,10 @@ public class ProtectedLabTestTemplateController extends ProtectedBaseApiControll
         ApiError apiError = null;
         try {
 
-            LabTest labTest = this.labTestService.findByResultTemplateId(code);
+            LabTestTemplate labTestTemplate = this.labTestTemplateService.findByCode(code);
 
-            if(labTest != null) {
-                if (TextUtils.isBlank(labTest.getResultTemplateId())) {
+            if(labTestTemplate != null) {
+                if (labTestTemplate.getLabTest() == null) {
                     apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("lab.test.template.notfound", "en"),
                             false, new ArrayList<>(), null);
 
@@ -232,12 +231,10 @@ public class ProtectedLabTestTemplateController extends ProtectedBaseApiControll
 
                 } else {
 
-                    LabTestTemplatePojo labTestTemplatePojo = null;
-                            // = this.labTestTemplateMongoDbService.removeAssignment(code.toLowerCase(), labTest);
+                    LabTestTemplatePojo labTestTemplatePojo = this.labTestTemplateService.removeAssignment(labTestTemplate);
 
                     if (labTestTemplatePojo != null) {
-                        apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("lab.test.template.found", "en"),
-                                true, new ArrayList<>(), labTestTemplatePojo);
+                        return myApiResponse.successful(labTestTemplatePojo, "lab.test.template.unassigned");
                     } else {
                         apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("lab.test.template.notfound", "en"),
                                 false, new ArrayList<>(), null);

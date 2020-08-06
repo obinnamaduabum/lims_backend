@@ -95,16 +95,15 @@ public class LabTestOrderDetailsServiceImpl implements LabTestOrderDetailsServic
         sampleCollectedModel.setCollectedBy(portalUser);
         sampleCollectedModel.setSampleCollected(SampleTypeConstant.SAMPLE_COLLECTED);
         SampleCollectedModel newlyCreatedSampleCollection =
-                this.sampleCollectedDao.save(sampleCollectedModel);
+        this.sampleCollectedDao.save(sampleCollectedModel);
 
         labTestOrderDetail.setSampleCollected(newlyCreatedSampleCollection);
         this.labTestOrderDetailDao.save(labTestOrderDetail);
 
 
-        LabScientistTestResultModel labScientistTestResultModel = new LabScientistTestResultModel();
-        labScientistTestResultModel.setMedicalLabScientist(null);
-        labScientistTestResultModel.setLabScientistStatusConstant(LabScientistStatusConstant.PENDING);
-        labScientistTestResultModel.setSampleCollectedModel(newlyCreatedSampleCollection);
+        LabScientistTestResultModel labScientistTestResultModel =
+                returnLabScientistTestResultModel(newlyCreatedSampleCollection);
+
 
 
         Optional<LabTest> optionalLabTest = this.labTestDao.findById(labTestOrderDetail.getLabTest().getId());
@@ -112,6 +111,15 @@ public class LabTestOrderDetailsServiceImpl implements LabTestOrderDetailsServic
         this.labScientistTestResultDao.save(labScientistTestResultModel);
 
         return newlyCreatedSampleCollection;
+    }
+
+
+    private LabScientistTestResultModel returnLabScientistTestResultModel(SampleCollectedModel newlyCreatedSampleCollection) {
+        LabScientistTestResultModel labScientistTestResultModel = new LabScientistTestResultModel();
+        labScientistTestResultModel.setMedicalLabScientist(null);
+        labScientistTestResultModel.setLabScientistStatusConstant(LabScientistStatusConstant.PENDING);
+        labScientistTestResultModel.setSampleCollectedModel(newlyCreatedSampleCollection);
+        return labScientistTestResultModel;
     }
 
     @Transactional
@@ -176,10 +184,8 @@ public class LabTestOrderDetailsServiceImpl implements LabTestOrderDetailsServic
             sampleCollectedModel.setDateUpdated(new Date());
             SampleCollectedModel newlySavedSampleCollection = this.sampleCollectedDao.save(sampleCollectedModel);
 
-            LabScientistTestResultModel labScientistTestResultModel = new LabScientistTestResultModel();
-            labScientistTestResultModel.setMedicalLabScientist(null);
-            labScientistTestResultModel.setLabScientistStatusConstant(LabScientistStatusConstant.PENDING);
-            labScientistTestResultModel.setSampleCollectedModel(newlySavedSampleCollection);
+            LabScientistTestResultModel labScientistTestResultModel =
+                    returnLabScientistTestResultModel(newlySavedSampleCollection);
 
 
             Optional<LabTest> optionalLabTest = this.labTestDao.findById(labTestOrderDetail.getLabTest().getId());
@@ -207,81 +213,7 @@ public class LabTestOrderDetailsServiceImpl implements LabTestOrderDetailsServic
     @Override
     public PaginationResponsePojo findAllByLabTestsOrdered(OrderedLabTestSearchDto orderedLabTestSearchDto, Pageable pageable) {
 
-        String email = null;
-        String fullName = null;
-        String phoneNumber = null;
-        String orderId = null;
-        String code = null;
-        SampleTypeConstant sampleCollectedStatus = null;
-        Date startDate;
-        Date endDate;
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getEmail())) {
-            email = orderedLabTestSearchDto.getEmail().toLowerCase().trim();
-        }
-
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getFullName())) {
-            fullName = orderedLabTestSearchDto.getFullName().toLowerCase().trim();
-        }
-
-
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getOrderId())) {
-            orderId = orderedLabTestSearchDto.getOrderId().toLowerCase().trim();
-        }
-
-
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getCode())) {
-            code = orderedLabTestSearchDto.getCode().toLowerCase().trim();
-        }
-
-
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getSampleCollectedStatus())) {
-            SampleTypeConstant sampleCollectedConstant = SampleTypeConstant.valueOf(orderedLabTestSearchDto.getSampleCollectedStatus().toUpperCase().trim());
-
-            if (SampleTypeConstant.ALL.equals(sampleCollectedConstant)) {
-                sampleCollectedStatus = null;
-            }
-
-            if (SampleTypeConstant.SAMPLE_COLLECTED.equals(sampleCollectedConstant)) {
-                sampleCollectedStatus = SampleTypeConstant.SAMPLE_COLLECTED;
-            }
-
-            if (SampleTypeConstant.SAMPLE_NOT_COLLECTED.equals(sampleCollectedConstant)) {
-                sampleCollectedStatus = SampleTypeConstant.SAMPLE_NOT_COLLECTED;
-            }
-        }
-
-
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getPhoneNumber())) {
-            phoneNumber = orderedLabTestSearchDto.getPhoneNumber().trim();
-        }
-
-        if (orderedLabTestSearchDto.getStartDate() != null) {
-            startDate = Utils.atStartOfDay(orderedLabTestSearchDto.getStartDate());
-        } else {
-
-            String pattern = "yyyy-MM-dd";
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-
-            Date date = null;
-            try {
-                date = simpleDateFormat.parse(dateSource);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            startDate = Utils.atStartOfDay(date);
-        }
-
-        if (orderedLabTestSearchDto.getEndDate() != null) {
-            endDate = Utils.atEndOfDay(orderedLabTestSearchDto.getEndDate());
-        } else {
-            Date date = new Date();
-            endDate = Utils.atEndOfDay(date);
-        }
-
-
-        int pageNumber = pageable.getPageNumber();
-        int pageSize = pageable.getPageSize();
-
+        InternalSearchResponsePojo internalSearchResponsePojo = responseInternalSearchResponsePojo(orderedLabTestSearchDto, pageable);
 
         //List<PortalUser> portalUserList = this.portalUserDao.findByDefaultPortalAccountCode(lookUpPortalAccount.getCode().toLowerCase(), email, fullName, startDate, endDate, pageable);
 
@@ -323,36 +255,10 @@ public class LabTestOrderDetailsServiceImpl implements LabTestOrderDetailsServic
                         +"))"
                         + " and s.dateUpdated between :startDate and :endDate order by s.dateUpdated desc");
 
-        query.setFirstResult((pageNumber) * pageSize);
-        if (StringUtils.isNotBlank(email)) {
-            query.setParameter("email", "%" + email + "%");
-        } else {
-            query.setParameter("email", email);
-        }
+        query.setFirstResult((internalSearchResponsePojo.getPageNumber()) * internalSearchResponsePojo.getPageSize());
 
-        query.setParameter("orderId", orderId);
+        myQueryBuilder(query, internalSearchResponsePojo);
 
-        query.setParameter("code", code);
-
-        if (StringUtils.isNotBlank(fullName)) {
-            query.setParameter("fullName", "%" + fullName + "%");
-        } else {
-            query.setParameter("fullName", fullName);
-        }
-
-//        logger.info("sampleCollectedStatus: " + sampleCollectedStatus);
-        query.setParameter("sampleCollectedStatus", sampleCollectedStatus);
-
-//        logger.info("phoneNumber: " + phoneNumber);
-        if (!TextUtils.isBlank(phoneNumber)) {
-            query.setParameter("phoneNumber", "%" + phoneNumber + "%");
-        } else {
-            query.setParameter("phoneNumber", phoneNumber);
-        }
-
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
-        query.setMaxResults(pageSize);
         this.entityManager.close();
 
 //        logger.info(this.gson.toJson(query.getResultList().size()));
@@ -368,10 +274,12 @@ public class LabTestOrderDetailsServiceImpl implements LabTestOrderDetailsServic
             LabTestsOrderedPojo labTestsOrderedPojo = new LabTestsOrderedPojo();
 //            query.getResultList() portalUserResponsePojo = new PortalUserResponsePojo();
 //
-            if (pageNumber == 0) {
+            if (internalSearchResponsePojo.getPageNumber() == 0) {
                 labTestsOrderedPojo.setPosition((long) (i + 1));
             } else {
-                labTestsOrderedPojo.setPosition((long) (i + pageSize + pageNumber));
+                labTestsOrderedPojo.setPosition((long) (i +
+                        internalSearchResponsePojo.getPageSize() +
+                        internalSearchResponsePojo.getPageNumber()));
             }
 
             LabTestPojo labTestPojo = new LabTestPojo();
@@ -469,8 +377,8 @@ public class LabTestOrderDetailsServiceImpl implements LabTestOrderDetailsServic
         }
 
         paginationResponsePojo.setDataList(orderedPojos);
-        paginationResponsePojo.setPageNumber((long) pageNumber);
-        paginationResponsePojo.setPageSize((long) pageSize);
+        paginationResponsePojo.setPageNumber((long) internalSearchResponsePojo.getPageNumber());
+        paginationResponsePojo.setPageSize((long) internalSearchResponsePojo.getPageSize());
 
 //        logger.info(this.gson.toJson(paginationResponsePojo));
         return paginationResponsePojo;
@@ -479,82 +387,9 @@ public class LabTestOrderDetailsServiceImpl implements LabTestOrderDetailsServic
     @Override
     public Long countAllByLabTestOrdered(OrderedLabTestSearchDto orderedLabTestSearchDto) {
 
-        String email = null;
-        String fullName = null;
-        String phoneNumber = null;
-        String orderId = null;
-        String code = null;
-        SampleTypeConstant sampleCollectedStatus = null;
-        Date startDate;
-        Date endDate;
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getEmail())) {
-            email = orderedLabTestSearchDto.getEmail().toLowerCase().trim();
-        }
-
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getFullName())) {
-            fullName = orderedLabTestSearchDto.getFullName().toLowerCase().trim();
-        }
-
-
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getOrderId())) {
-            orderId = orderedLabTestSearchDto.getOrderId().toLowerCase().trim();
-        }
-
-
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getCode())) {
-            code = orderedLabTestSearchDto.getCode().toLowerCase().trim();
-        }
-
-
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getSampleCollectedStatus())) {
-            SampleTypeConstant sampleCollectedConstant = SampleTypeConstant.valueOf(orderedLabTestSearchDto.getSampleCollectedStatus().toUpperCase().trim());
-
-            if (SampleTypeConstant.ALL.equals(sampleCollectedConstant)) {
-                sampleCollectedStatus = null;
-            }
-
-            if (SampleTypeConstant.SAMPLE_COLLECTED.equals(sampleCollectedConstant)) {
-                sampleCollectedStatus = SampleTypeConstant.SAMPLE_COLLECTED;
-
-            }
-
-            if (SampleTypeConstant.SAMPLE_NOT_COLLECTED.equals(sampleCollectedConstant)) {
-                sampleCollectedStatus = SampleTypeConstant.SAMPLE_NOT_COLLECTED;
-            }
-        }
-
-
-        // if (!TextUtils.isBlank(orderedLabTestSearchDto.getPhoneNumber())) {
-        if (!TextUtils.isBlank(orderedLabTestSearchDto.getPhoneNumber())) {
-            phoneNumber = orderedLabTestSearchDto.getPhoneNumber().trim();
-        }
-        //  }
-
-        if (orderedLabTestSearchDto.getStartDate() != null) {
-            startDate = Utils.atStartOfDay(orderedLabTestSearchDto.getStartDate());
-        } else {
-
-            String pattern = "yyyy-MM-dd";
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-
-            Date date = null;
-            try {
-                date = simpleDateFormat.parse(dateSource);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            startDate = Utils.atStartOfDay(date);
-        }
-
-        if (orderedLabTestSearchDto.getEndDate() != null) {
-            endDate = Utils.atEndOfDay(orderedLabTestSearchDto.getEndDate());
-        } else {
-            Date date = new Date();
-            endDate = Utils.atEndOfDay(date);
-        }
-
-
         //List<PortalUser> portalUserList = this.portalUserDao.findByDefaultPortalAccountCode(lookUpPortalAccount.getCode().toLowerCase(), email, fullName, startDate, endDate, pageable);
+
+        InternalSearchResponsePojo internalSearchResponsePojo = responseInternalSearchResponsePojo(orderedLabTestSearchDto, null);
 
         Query query = this.entityManager.createQuery(
                 "select distinct count(la) from LabTestOrderDetail as la"
@@ -588,37 +423,145 @@ public class LabTestOrderDetailsServiceImpl implements LabTestOrderDetailsServic
                         + " and s.dateUpdated between :startDate and :endDate"
         );
 
-        if (StringUtils.isNotBlank(email)) {
-            query.setParameter("email", "%" + email + "%");
-        } else {
-            query.setParameter("email", email);
-        }
 
-        query.setParameter("orderId", orderId);
+        myQueryBuilder(query, internalSearchResponsePojo);
 
-        query.setParameter("code", code);
-
-        if (!TextUtils.isBlank(fullName)) {
-            query.setParameter("fullName", "%" + fullName + "%");
-        } else {
-            query.setParameter("fullName", fullName);
-        }
-
-        query.setParameter("sampleCollectedStatus", sampleCollectedStatus);
-
-
-        if (!TextUtils.isBlank(phoneNumber)) {
-            query.setParameter("phoneNumber", "%" + phoneNumber + "%");
-        } else {
-            query.setParameter("phoneNumber", phoneNumber);
-        }
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
         this.entityManager.close();
 
-//        logger.info(this.gson.toJson(query.getResultList().size()));
 
         int count = ((Number) query.getSingleResult()).intValue();
         return (long) count;
+    }
+
+
+
+    private InternalSearchResponsePojo responseInternalSearchResponsePojo(OrderedLabTestSearchDto orderedLabTestSearchDto,
+                                                                  Pageable pageable) {
+
+        String email = null;
+        String fullName = null;
+        String phoneNumber = null;
+        String orderId = null;
+        String code = null;
+        SampleTypeConstant sampleCollectedStatus = null;
+        Date startDate;
+        Date endDate;
+
+        if (!TextUtils.isBlank(orderedLabTestSearchDto.getEmail())) {
+            email = orderedLabTestSearchDto.getEmail().toLowerCase().trim();
+        }
+
+        if (!TextUtils.isBlank(orderedLabTestSearchDto.getFullName())) {
+            fullName = orderedLabTestSearchDto.getFullName().toLowerCase().trim();
+        }
+
+
+        if (!TextUtils.isBlank(orderedLabTestSearchDto.getOrderId())) {
+            orderId = orderedLabTestSearchDto.getOrderId().toLowerCase().trim();
+        }
+
+
+        if (!TextUtils.isBlank(orderedLabTestSearchDto.getCode())) {
+            code = orderedLabTestSearchDto.getCode().toLowerCase().trim();
+        }
+
+
+        if (!TextUtils.isBlank(orderedLabTestSearchDto.getSampleCollectedStatus())) {
+            SampleTypeConstant sampleCollectedConstant = SampleTypeConstant.valueOf(orderedLabTestSearchDto.getSampleCollectedStatus().toUpperCase().trim());
+
+            if (SampleTypeConstant.ALL.equals(sampleCollectedConstant)) {
+                sampleCollectedStatus = null;
+            }
+
+            if (SampleTypeConstant.SAMPLE_COLLECTED.equals(sampleCollectedConstant)) {
+                sampleCollectedStatus = SampleTypeConstant.SAMPLE_COLLECTED;
+            }
+
+            if (SampleTypeConstant.SAMPLE_NOT_COLLECTED.equals(sampleCollectedConstant)) {
+                sampleCollectedStatus = SampleTypeConstant.SAMPLE_NOT_COLLECTED;
+            }
+        }
+
+
+        if (!TextUtils.isBlank(orderedLabTestSearchDto.getPhoneNumber())) {
+            phoneNumber = orderedLabTestSearchDto.getPhoneNumber().trim();
+        }
+
+        if (orderedLabTestSearchDto.getStartDate() != null) {
+            startDate = Utils.atStartOfDay(orderedLabTestSearchDto.getStartDate());
+        } else {
+
+            String pattern = "yyyy-MM-dd";
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
+            Date date = null;
+            try {
+                date = simpleDateFormat.parse(dateSource);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            startDate = Utils.atStartOfDay(date);
+        }
+
+        if (orderedLabTestSearchDto.getEndDate() != null) {
+            endDate = Utils.atEndOfDay(orderedLabTestSearchDto.getEndDate());
+        } else {
+            Date date = new Date();
+            endDate = Utils.atEndOfDay(date);
+        }
+
+
+
+        int pageNumber = 0;
+        int pageSize = 10;
+
+        if(pageable != null){
+            pageNumber = pageable.getPageNumber();
+            pageSize = pageable.getPageSize();
+        }
+
+
+        InternalSearchResponsePojo internalSearchResponsePojo =new InternalSearchResponsePojo();
+        internalSearchResponsePojo.setCode(code);
+        internalSearchResponsePojo.setEmail(email);
+        internalSearchResponsePojo.setEndDate(endDate);
+        internalSearchResponsePojo.setFullName(fullName);
+        internalSearchResponsePojo.setOrderId(orderId);
+        internalSearchResponsePojo.setPhoneNumber(phoneNumber);
+        internalSearchResponsePojo.setSampleCollectedStatus(sampleCollectedStatus);
+        internalSearchResponsePojo.setStartDate(startDate);
+        internalSearchResponsePojo.setPageNumber(pageNumber);
+        internalSearchResponsePojo.setPageSize(pageSize);
+
+        return internalSearchResponsePojo;
+    }
+
+    private void myQueryBuilder(Query query, InternalSearchResponsePojo internalSearchResponsePojo){
+        if (StringUtils.isNotBlank(internalSearchResponsePojo.getEmail())) {
+            query.setParameter("email", "%" + internalSearchResponsePojo.getEmail() + "%");
+        } else {
+            query.setParameter("email", internalSearchResponsePojo.getEmail());
+        }
+
+        query.setParameter("orderId", internalSearchResponsePojo.getOrderId());
+
+        query.setParameter("code", internalSearchResponsePojo.getCode());
+
+        if (!TextUtils.isBlank(internalSearchResponsePojo.getFullName())) {
+            query.setParameter("fullName", "%" + internalSearchResponsePojo.getFullName() + "%");
+        } else {
+            query.setParameter("fullName", internalSearchResponsePojo.getFullName());
+        }
+
+        query.setParameter("sampleCollectedStatus", internalSearchResponsePojo.getSampleCollectedStatus());
+
+
+        if (!TextUtils.isBlank(internalSearchResponsePojo.getPhoneNumber())) {
+            query.setParameter("phoneNumber", "%" + internalSearchResponsePojo.getPhoneNumber() + "%");
+        } else {
+            query.setParameter("phoneNumber", internalSearchResponsePojo.getPhoneNumber());
+        }
+        query.setParameter("startDate", internalSearchResponsePojo.getStartDate());
+        query.setParameter("endDate", internalSearchResponsePojo.getEndDate());
     }
 }
