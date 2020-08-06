@@ -51,8 +51,8 @@ public class ProtectedLabScientistResultController extends ProtectedBaseApiContr
         try {
 
             Pageable sortedByDateCreated = PageRequest.of(page, size, Sort.by("date_created").descending());
-            PaginationResponsePojo paginationResponsePojo = this.labScientistResultService.findByLabScientistResultWithPagination(orderedLabTestSearchDto, sortedByDateCreated);
-            logger.info(this.gson.toJson(paginationResponsePojo));
+            PaginationResponsePojo paginationResponsePojo
+            = this.labScientistResultService.findByLabScientistResultWithPagination(orderedLabTestSearchDto, sortedByDateCreated);
             return this.apiResponse.successful(paginationResponsePojo, "template.assigned.to.lab.test");
 
         } catch (Exception e) {

@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @RestController
 public class ProtectedLabTestTemplateController extends ProtectedBaseApiController {
@@ -255,5 +256,43 @@ public class ProtectedLabTestTemplateController extends ProtectedBaseApiControll
             return new MyApiResponse().internalServerErrorResponse();
         }
 
+    }
+
+
+    @GetMapping("/default/lab_test_template/by_lab_test_id/{id}")
+    public ResponseEntity<Object> getTemplate(@PathVariable("id") String id) {
+
+        try {
+
+            if(id == null) {
+               return myApiResponse.badRequest(null, "id.required");
+            }
+
+            Optional<LabTest> optionalLabTest = this.labTestService.findById(Long.valueOf(id));
+
+            if(optionalLabTest.isPresent()) {
+                LabTest labTest = optionalLabTest.get();
+
+                LabTestTemplate labTestTemplate = labTest.getLabTestTemplate();
+
+                if(labTestTemplate != null) {
+
+                    LabTestTemplatePojo labTestTemplatePojo = new LabTestTemplatePojo();
+                    labTestTemplatePojo.setData(labTestTemplate.getContent());
+                    labTestTemplatePojo.setLabTestName(labTestTemplate.getName());
+
+                    return myApiResponse.successful(labTestTemplatePojo, "lab.test.template.found");
+
+                } else {
+                    return myApiResponse.notSuccessful(null, "lab.test.template.notfound");
+                }
+            } else {
+                return myApiResponse.notSuccessful(null, "lab.test.not.found");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return myApiResponse.internalServerErrorResponse();
+        }
     }
 }

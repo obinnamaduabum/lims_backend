@@ -46,9 +46,6 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
     @Override
     public PaginationResponsePojo findByLabScientistResultWithPagination(OrderedLabTestSearchDto orderedLabTestSearchDto, Pageable pageable) {
 
-
-        //this.logger.info(this.gson.toJson(orderedLabTestSearchDto));
-
         InternalSearchResponsePojo internalSearchResponsePojo
         = responseInternalLabTestResultBuilder(orderedLabTestSearchDto, pageable);
 
@@ -184,6 +181,10 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
             }
 
             LabScientistTestResultModel labScientistTestResultModel = (LabScientistTestResultModel) rows.get(i)[4];
+
+            logger.info(this.gson.toJson(labScientistTestResultModel.getLabResultId()));
+            logger.info(this.gson.toJson(labScientistTestResultModel.getId()));
+
             labTestsOrderedPojo.setLabTestFormId(labScientistTestResultModel.getLabResultId());
             labTestsOrderedPojo.setMedicalLabScientistSampleCollectedId(labScientistTestResultModel.getId());
 

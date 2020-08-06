@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,6 +35,21 @@ public class MyApiResponse {
         ApiError apiError;
         apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage(message, "en"),
                 true, new ArrayList<>(), inputData);
+        return response(apiError);
+    }
+
+
+    public ResponseEntity<Object> badRequest(Object inputData, String message) {
+        ApiError apiError;
+        apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, messageUtil.getMessage(message, "en"),
+                false, new ArrayList<>(), inputData);
+        return response(apiError);
+    }
+
+    public ResponseEntity<Object> notSuccessful(Object inputData, String message) {
+        ApiError apiError;
+        apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage(message, "en"),
+                false, new ArrayList<>(), inputData);
         return response(apiError);
     }
 
