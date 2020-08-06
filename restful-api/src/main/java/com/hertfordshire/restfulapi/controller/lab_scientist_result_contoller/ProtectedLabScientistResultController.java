@@ -22,13 +22,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 
 @RestController
-public class LabScientistResultController extends ProtectedBaseApiController {
+public class ProtectedLabScientistResultController extends ProtectedBaseApiController {
 
-    private static final Logger logger = LoggerFactory.getLogger(LabScientistResultController.class.getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(ProtectedLabScientistResultController.class.getSimpleName());
 
     @Autowired
     private LabScientistResultService labScientistResultService;
-
 
     @Autowired
     private MessageUtil messageUtil;
@@ -38,7 +37,8 @@ public class LabScientistResultController extends ProtectedBaseApiController {
 
     private Gson gson;
 
-    public LabScientistResultController() {
+    @Autowired
+    public ProtectedLabScientistResultController() {
         this.gson = new Gson();
     }
 

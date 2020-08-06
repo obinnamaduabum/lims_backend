@@ -47,14 +47,14 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
     public PaginationResponsePojo findByLabScientistResultWithPagination(OrderedLabTestSearchDto orderedLabTestSearchDto, Pageable pageable) {
 
 
-        this.logger.info(this.gson.toJson(orderedLabTestSearchDto));
+        //this.logger.info(this.gson.toJson(orderedLabTestSearchDto));
 
-        InternalSearchResponsePojo internalSearchResponsePojo =
-                responseInternalLabTestResultBuilder(
-                        orderedLabTestSearchDto,
-                        pageable);
+        InternalSearchResponsePojo internalSearchResponsePojo
+        = responseInternalLabTestResultBuilder(orderedLabTestSearchDto, pageable);
 
-        Query query = this.entityManager.createQuery(
+        Query query;
+
+        query = this.entityManager.createQuery(
                 "select distinct "
                         + "la, "
                         + "p, "
@@ -80,19 +80,19 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
                         +" or (:fullName is null or lower(p.lastName) like :fullName)"
                         +" or (:fullName is null or lower(p.otherName) like :fullName)"
                         +"))"
+                        + " and s.dateUpdated between :startDate and :endDate order by s.dateUpdated desc"
 
-                        + " and s.dateUpdated between :startDate and :endDate order by s.dateUpdated desc");
+        );
 
+         query = queryBuilder(query, internalSearchResponsePojo);
 
-
-
-        queryBuilder(query, internalSearchResponsePojo);
-
-        query.setMaxResults(internalSearchResponsePojo.getPageSize());
+         query.setMaxResults(internalSearchResponsePojo.getPageSize());
 
         this.entityManager.close();
 
         List<Object[]> rows = query.getResultList();
+
+        logger.info("rows: " +rows.size());
 
         PaginationResponsePojo paginationResponsePojo = new PaginationResponsePojo();
 //
@@ -156,19 +156,6 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
                 labTestsOrderedPojo.setPatient(portalUserPojo);
             }
 
-            PortalUserInstitutionLabTestOrderDetail unregisteredPatient =
-            (PortalUserInstitutionLabTestOrderDetail) rows.get(i)[4];
-
-
-            if (unregisteredPatient != null) {
-                PortalUserPojo portalUserPojo = new PortalUserPojo();
-                portalUserPojo.setFirstName(unregisteredPatient.getFirstName());
-                portalUserPojo.setLastName(unregisteredPatient.getLastName());
-                portalUserPojo.setOtherName(unregisteredPatient.getOtherName());
-                portalUserPojo.setPhoneNumber(unregisteredPatient.getPhoneNumber());
-                labTestsOrderedPojo.setPatient(portalUserPojo);
-            }
-
 
             SampleCollectedModel sampleCollectedModel = (SampleCollectedModel) rows.get(i)[2];
             SampleCollectionPojo sampleCollectionPojo = new SampleCollectionPojo();
@@ -196,7 +183,7 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
                 labTestsOrderedPojo.setSampleCollected(sampleCollectionPojo);
             }
 
-            LabScientistTestResultModel labScientistTestResultModel = (LabScientistTestResultModel) rows.get(i)[5];
+            LabScientistTestResultModel labScientistTestResultModel = (LabScientistTestResultModel) rows.get(i)[4];
             labTestsOrderedPojo.setLabTestFormId(labScientistTestResultModel.getLabResultId());
             labTestsOrderedPojo.setMedicalLabScientistSampleCollectedId(labScientistTestResultModel.getId());
 
@@ -209,7 +196,7 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
         paginationResponsePojo.setPageSize((long) internalSearchResponsePojo.getPageSize());
         paginationResponsePojo.setLength(this.countByLabScientistResultWithPagination(orderedLabTestSearchDto));
 
-        logger.info(this.gson.toJson(paginationResponsePojo));
+        // logger.info(this.gson.toJson(paginationResponsePojo));
         return paginationResponsePojo;
     }
 
@@ -232,7 +219,6 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
                         + " LEFT JOIN OrdersModel o ON o.id = la.ordersModel.id"
                         + " LEFT JOIN PortalUser p ON ((p.id = la.patient.id) or p.id is null)"
 
-
                         + " where o.cashCollected = true"
                         + " and (:orderId is null or lower(o.code) = :orderId)"
 
@@ -246,9 +232,11 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
                         + " or (:fullName is null or lower(p.lastName) like :fullName)"
                         + " or (:fullName is null or lower(p.otherName) like :fullName)"
                         + "))"
-                        + " and s.dateUpdated between :startDate and :endDate");
+                        + " and s.dateUpdated between :startDate and :endDate"
 
-        queryBuilder(query, internalSearchResponsePojo);
+        );
+
+        query = queryBuilder(query, internalSearchResponsePojo);
 
 
         this.entityManager.close();
@@ -260,7 +248,7 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
     }
 
 
-    private void queryBuilder(Query query, InternalSearchResponsePojo internalSearchResponsePojo) {
+    private Query queryBuilder(Query query, InternalSearchResponsePojo internalSearchResponsePojo) {
 
         if (StringUtils.isNotBlank(internalSearchResponsePojo.getEmail())) {
             query.setParameter("email", "%" + internalSearchResponsePojo.getEmail() + "%");
@@ -287,12 +275,14 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
         query.setParameter("startDate", internalSearchResponsePojo.getStartDate());
         query.setParameter("endDate", internalSearchResponsePojo.getEndDate());
 
+        return query;
     }
 
 
     private InternalSearchResponsePojo responseInternalLabTestResultBuilder(
             OrderedLabTestSearchDto orderedLabTestSearchDto,
             Pageable pageable) {
+
         String email = null;
         String fullName = null;
         String phoneNumber = null;
@@ -301,6 +291,7 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
         SampleTypeConstant sampleCollectedStatus = null;
         Date startDate;
         Date endDate;
+
         if (!TextUtils.isBlank(orderedLabTestSearchDto.getEmail())) {
             email = orderedLabTestSearchDto.getEmail().toLowerCase().trim();
         }
@@ -354,7 +345,6 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
             pageNumber = pageable.getPageNumber();
             pageSize = pageable.getPageSize();
         }
-
 
         InternalSearchResponsePojo internalSearchResponsePojo = new InternalSearchResponsePojo();
         internalSearchResponsePojo.setEmail(email);
