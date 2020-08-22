@@ -28,8 +28,9 @@ public class LabScientistTestResultModel {
     @Enumerated(EnumType.STRING)
     private LabScientistStatusConstant labScientistStatusConstant;
 
-    @NotBlank
-    private String labResultId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "lab_result_id", referencedColumnName = "id")
+    private LabTestResultModel labResult;
 
     @NotNull
     @OneToOne(cascade = CascadeType.ALL)
@@ -95,12 +96,12 @@ public class LabScientistTestResultModel {
         this.labScientistStatusConstant = labScientistStatusConstant;
     }
 
-    public String getLabResultId() {
-        return labResultId;
+    public LabTestResultModel getLabResult() {
+        return labResult;
     }
 
-    public void setLabResultId(String labResultId) {
-        this.labResultId = labResultId;
+    public void setLabResult(LabTestResultModel labResult) {
+        this.labResult = labResult;
     }
 
     public LabTest getLabTest() {

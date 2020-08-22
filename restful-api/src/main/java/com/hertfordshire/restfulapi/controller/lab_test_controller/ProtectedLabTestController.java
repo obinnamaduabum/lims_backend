@@ -8,6 +8,7 @@ import com.hertfordshire.restfulapi.controller.lab_test_category_controller.Prot
 import com.hertfordshire.service.psql.lab_test.LabTestService;
 import com.hertfordshire.utils.MessageUtil;
 import com.hertfordshire.utils.controllers.ProtectedBaseApiController;
+import com.hertfordshire.utils.errors.MyApiResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -41,6 +42,9 @@ public class ProtectedLabTestController extends ProtectedBaseApiController {
 
     @Autowired
     private LabTestService labTestService;
+
+    @Autowired
+    private MyApiResponse myApiResponse;
 
     @PostMapping("/default/lab-test/test/upload")
     public ResponseEntity<Object> singleFileUpload(@RequestParam("file") MultipartFile multipartFile) {
@@ -117,11 +121,7 @@ public class ProtectedLabTestController extends ProtectedBaseApiController {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
-
-            apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("file.upload.failed", "en"), false, new ArrayList<>(), null);
-
-            return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+            return myApiResponse.internalServerErrorResponse();
         }
     }
 }

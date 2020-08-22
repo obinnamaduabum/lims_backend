@@ -1,6 +1,7 @@
 package com.hertfordshire.service.psql.lab_test_order_details;
 
 
+import com.hertfordshire.dto.DateSearchDto;
 import com.hertfordshire.dto.OrderedLabTestSearchDto;
 import com.hertfordshire.model.psql.*;
 import com.hertfordshire.pojo.PaginationResponsePojo;
@@ -37,4 +38,8 @@ public interface LabTestOrderDetailsService {
     PaginationResponsePojo findAllByLabTestsOrdered(OrderedLabTestSearchDto orderedLabTestSearchDto, Pageable pageable);
 
     Long countAllByLabTestOrdered(OrderedLabTestSearchDto orderedLabTestSearchDto);
+
+    LabTestOrderDetail findUniqueCode(String code);
+
+    PaginationResponsePojo findAllByPatientId(PortalUser portalUser, DateSearchDto dateSearchDto, Pageable pageable);
 }

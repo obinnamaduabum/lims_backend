@@ -75,8 +75,6 @@ public class ProtectedTestOrdersController extends ProtectedBaseApiController {
     @Autowired
     private SampleCollectedDao sampleCollectedDao;
 
-    @Autowired
-    private PortalUserInstitutionLabTestOrderDetailDao portalUserInstitutionLabTestOrderDetailDao;
 
     @Autowired
     private LabTestOrderDao labTestOrderDao;

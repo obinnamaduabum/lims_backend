@@ -63,11 +63,9 @@ public class TestOrderServiceImpl implements TestOrderService {
     private Gson gson;
 
     @Autowired
-    private PortalUserInstitutionLabTestOrderDetailDao portalUserInstitutionLabTestOrderDetailDao;
-
-    @Autowired
     private OrderDetailsUniqueIdSequenceService orderDetailsUniqueIdSequenceService;
 
+    @Autowired
     public TestOrderServiceImpl() {
         this.gson = new Gson();
     }

@@ -35,7 +35,6 @@ public class LabTestOrderDetail {
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     private PortalUser patient;
 
-
     private Long quantity;
 
     private Long total;

@@ -64,10 +64,9 @@ public class MyApiResponse {
     public ResponseEntity<Object> internalServerErrorResponse() {
 
         ApiError apiError;
-        System.out.println(messageUtil.getMessage("server.error", "en"));
         apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "bbb",
+                messageUtil.getMessage("server.error", "en"),
                 false, new ArrayList<>(), null);
 
         return response(apiError);

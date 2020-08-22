@@ -152,11 +152,21 @@ public class ProtectedLabTestTemplateController extends ProtectedBaseApiControll
 
         try {
 
+            if(code == null) {
+                return myApiResponse.badRequest(null, "code.required");
+            }
+
             LabTestTemplate labTestTemplate = this.labTestTemplateService.findByCode(code.toLowerCase());
 
             if (labTestTemplate != null) {
+
+                LabTestTemplatePojo labTestTemplatePojo = new LabTestTemplatePojo();
+                labTestTemplatePojo.setData(labTestTemplate.getContent());
+                labTestTemplatePojo.setTitle(labTestTemplate.getName());
+                labTestTemplatePojo.setCode(labTestTemplate.getCode());
+
                 apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("lab.test.template.found", "en"),
-                        true, new ArrayList<>(), labTestTemplate);
+                        true, new ArrayList<>(), labTestTemplatePojo);
             } else {
                 apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("lab.test.template.notfound", "en"),
                         false, new ArrayList<>(), null);
@@ -207,7 +217,8 @@ public class ProtectedLabTestTemplateController extends ProtectedBaseApiControll
             }
 
             return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             return myApiResponse.internalServerErrorResponse();
         }
@@ -268,6 +279,7 @@ public class ProtectedLabTestTemplateController extends ProtectedBaseApiControll
                return myApiResponse.badRequest(null, "id.required");
             }
 
+            logger.info("texting id: "+ id);
             Optional<LabTest> optionalLabTest = this.labTestService.findById(Long.valueOf(id));
 
             if(optionalLabTest.isPresent()) {
@@ -279,7 +291,8 @@ public class ProtectedLabTestTemplateController extends ProtectedBaseApiControll
 
                     LabTestTemplatePojo labTestTemplatePojo = new LabTestTemplatePojo();
                     labTestTemplatePojo.setData(labTestTemplate.getContent());
-                    labTestTemplatePojo.setLabTestName(labTestTemplate.getName());
+                    labTestTemplatePojo.setLabTestName(labTest.getName());
+                    labTestTemplatePojo.setTitle(labTestTemplate.getName());
 
                     return myApiResponse.successful(labTestTemplatePojo, "lab.test.template.found");
 

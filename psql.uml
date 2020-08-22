@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.hertfordshire.model.psql</OriginalElement>
+  <nodes>
+    <node x="351.0" y="0.0">com.hertfordshire.model.psql.SubscriptionsForNotificationModel</node>
+    <node x="574.0" y="518.0">com.hertfordshire.model.psql.firebase</node>
+    <node x="225.0" y="296.0">com.hertfordshire.model.psql.PaymentTransaction</node>
+    <node x="0.0" y="148.0">com.hertfordshire.model.psql.LabScientistTestResultModel</node>
+    <node x="311.0" y="74.0">com.hertfordshire.model.psql.PhoneNumberVerificationCodes</node>
+    <node x="433.0" y="666.0">com.hertfordshire.model.psql.LabTest</node>
+    <node x="408.0" y="444.0">com.hertfordshire.model.psql.LabTestTemplate</node>
+    <node x="0.0" y="0.0">com.hertfordshire.model.psql.PortalAccountAndPortalUserRoleMappper</node>
+    <node x="181.0" y="592.0">com.hertfordshire.model.psql.OrdersModel</node>
+    <node x="465.0" y="222.0">com.hertfordshire.model.psql.SettingsForPortalUser</node>
+    <node x="0.0" y="370.0">com.hertfordshire.model.psql.LabTestResultModel</node>
+    <node x="354.0" y="592.0">com.hertfordshire.model.psql.PortalUser</node>
+    <node x="0.0" y="74.0">com.hertfordshire.model.psql.LimitPhoneNumberVerificationSms</node>
+    <node x="0.0" y="296.0">com.hertfordshire.model.psql.PasswordResetToken</node>
+    <node x="235.0" y="222.0">com.hertfordshire.model.psql.RabbitMqQueueModel</node>
+    <node x="198.0" y="518.0">com.hertfordshire.model.psql.MerchantProfile</node>
+    <node x="207.0" y="444.0">com.hertfordshire.model.psql.KafkaTopicModel</node>
+    <node x="437.0" y="370.0">com.hertfordshire.model.psql.LabTestOrderDetail</node>
+    <node x="511.0" y="592.0">com.hertfordshire.model.psql.AuditTrail</node>
+    <node x="0.0" y="444.0">com.hertfordshire.model.psql.KafkaSubscription</node>
+    <node x="445.0" y="296.0">com.hertfordshire.model.psql.CountryPhoneCodes</node>
+    <node x="0.0" y="518.0">com.hertfordshire.model.psql.LabTestCategory</node>
+    <node x="575.0" y="666.0">com.hertfordshire.model.psql.Role</node>
+    <node x="290.0" y="666.0">com.hertfordshire.model.psql.Country</node>
+    <node x="0.0" y="592.0">com.hertfordshire.model.psql.PortalAccount</node>
+    <node x="219.0" y="370.0">com.hertfordshire.model.psql.PaymentMethodInfo</node>
+    <node x="0.0" y="222.0">com.hertfordshire.model.psql.SampleCollectedModel</node>
+    <node x="0.0" y="666.0">com.hertfordshire.model.psql.Privilege</node>
+    <node x="146.0" y="666.0">com.hertfordshire.model.psql.Settings</node>
+    <node x="389.0" y="518.0">com.hertfordshire.model.psql.AdminSettings</node>
+    <node x="273.0" y="148.0">com.hertfordshire.model.psql.RabbitMqExchangeModel</node>
+    <node x="523.0" y="148.0">com.hertfordshire.model.psql.EmailVerificationToken</node>
+  </nodes>
+  <notes />
+  <edges />
+  <settings layout="Hierarchic Group" zoom="0.7076923076923077" x="358.0" y="338.0" />
+  <SelectedNodes>
+    <node>com.hertfordshire.model.psql.PortalAccountAndPortalUserRoleMappper</node>
+  </SelectedNodes>
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

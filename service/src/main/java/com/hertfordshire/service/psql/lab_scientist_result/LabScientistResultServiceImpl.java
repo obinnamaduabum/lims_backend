@@ -1,6 +1,7 @@
 package com.hertfordshire.service.psql.lab_scientist_result;
 
 import com.google.gson.Gson;
+import com.hertfordshire.dao.psql.LabScientistTestResultDao;
 import com.hertfordshire.dto.OrderedLabTestSearchDto;
 import com.hertfordshire.model.psql.*;
 import com.hertfordshire.pojo.*;
@@ -23,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LabScientistResultServiceImpl implements LabScientistResultService {
@@ -38,6 +40,9 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
     private EntityManager entityManager;
 
     String dateSource = "2000-09-09";
+
+    @Autowired
+    private LabScientistTestResultDao labScientistTestResultDao;
 
     public LabScientistResultServiceImpl() {
         this.gson = new Gson();
@@ -116,6 +121,7 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
                 labTestsOrderedPojo.setDateCreated(labTestOrderDetail.getDateCreated());
                 labTestsOrderedPojo.setDateUpdated(labTestOrderDetail.getDateUpdated());
 
+
                 try {
 
                     OrdersModel order = (OrdersModel) rows.get(i)[3];
@@ -182,10 +188,10 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
 
             LabScientistTestResultModel labScientistTestResultModel = (LabScientistTestResultModel) rows.get(i)[4];
 
-            logger.info(this.gson.toJson(labScientistTestResultModel.getLabResultId()));
-            logger.info(this.gson.toJson(labScientistTestResultModel.getId()));
-
-            labTestsOrderedPojo.setLabTestFormId(labScientistTestResultModel.getLabResultId());
+//            logger.info(this.gson.toJson(labScientistTestResultModel.getLabResultId()));
+//            logger.info(this.gson.toJson(labScientistTestResultModel.getId()));
+//
+//            labTestsOrderedPojo.setLabTestFormId(labScientistTestResultModel.getLabTest().getLabTestTemplate().getId().toString());
             labTestsOrderedPojo.setMedicalLabScientistSampleCollectedId(labScientistTestResultModel.getId());
 
             labTestsOrderedPojo.setLabScientistStatusConstant(labScientistTestResultModel.getLabScientistStatusConstant().toString());
@@ -197,7 +203,7 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
         paginationResponsePojo.setPageSize((long) internalSearchResponsePojo.getPageSize());
         paginationResponsePojo.setLength(this.countByLabScientistResultWithPagination(orderedLabTestSearchDto));
 
-        // logger.info(this.gson.toJson(paginationResponsePojo));
+        logger.info(this.gson.toJson(paginationResponsePojo));
         return paginationResponsePojo;
     }
 
@@ -242,6 +248,11 @@ public class LabScientistResultServiceImpl implements LabScientistResultService 
 
         int count = ((Number) query.getSingleResult()).intValue();
         return (long) count;
+    }
+
+    @Override
+    public Optional<LabScientistTestResultModel> findById(Long id) {
+        return this.labScientistTestResultDao.findById(id);
     }
 
 

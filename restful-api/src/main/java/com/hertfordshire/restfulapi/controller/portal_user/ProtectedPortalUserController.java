@@ -80,6 +80,9 @@ public class ProtectedPortalUserController extends ProtectedBaseApiController {
     private PortalAccountAndPortalUserRoleMapperDao portalAccountAndPortalUserRoleMapperDao;
 
 
+    @Autowired
+    private MyApiResponse myApiResponse;
+
     public ProtectedPortalUserController() {
         this.gson = new Gson();
     }
@@ -503,14 +506,20 @@ public class ProtectedPortalUserController extends ProtectedBaseApiController {
 
             //logger.info(this.gson.toJson(paginationResponsePojo));
 
+            logger.info("wwww");
+
             apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("list.of.users", "en"),
                     true, new ArrayList<>(), paginationResponsePojo);
+            return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
         } catch (Exception e) {
-            apiError = new ApiError(HttpStatus.OK.value(), HttpStatus.OK, messageUtil.getMessage("no.users.found", "en"),
-                    false, new ArrayList<>(), null);
-            e.printStackTrace();
+
+            logger.info("xxxwwww");
+
+            return myApiResponse.internalServerErrorResponse();
+
+            // e.printStackTrace();
         }
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+
     }
 
     @PostMapping("/auth/portal_user/edit/for_admin/view")
